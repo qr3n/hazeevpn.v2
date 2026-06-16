@@ -139,7 +139,7 @@ export default function Home() {
                 data-vaul-drawer-wrapper=""
             >
                 <div className="pt-12 relative">
-                    <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.9] tracking-tight">
+                    <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
                             фывфыв!
@@ -277,8 +277,8 @@ export default function Home() {
                                             {platform === null ? (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
                                                     <div className="flex flex-col gap-2 px-1 text-center">
-                                                        <h2 className="text-4xl font-semibold text-white leading-tight">Выберите устройство</h2>
-                                                        <p className="text-zinc-500 text-base font-medium leading-tight">Мы подберем лучший способ подключения</p>
+                                                        <h2 className="text-4xl font-semibold text-white leading-none">Выберите устройство</h2>
+                                                        <p className="text-zinc-500 text-base font-medium leading-none">Мы подберем лучший способ подключения</p>
                                                     </div>
                                                     <div className="grid grid-cols-2 gap-3">
                                                         {(Object.keys(PLATFORMS) as PlatformKey[]).map((key) => {
@@ -317,7 +317,7 @@ export default function Home() {
 
                                                                 <div className="flex flex-col items-start gap-1">
                                                                     <span className="text-2xl font-bold text-white leading-none">{label}</span>
-                                                                    <span className="text-zinc-500 text-sm font-medium leading-tight">{desc}</span>
+                                                                    <span className="text-zinc-500 text-sm font-medium leading-none">{desc}</span>
                                                                 </div>
                                                                 <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center">
                                                                     <Chevron className="text-zinc-400 w-4 h-4" />
@@ -332,10 +332,10 @@ export default function Home() {
                                                     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
                                                         <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
                                                         <div className="flex flex-col gap-2">
-                                                            <h2 className="text-4xl font-semibold text-white leading-tight">
+                                                            <h2 className="text-4xl font-semibold text-white leading-none">
                                                                 Готово!
                                                             </h2>
-                                                            <p className="text-zinc-500 text-lg font-medium leading-tight">
+                                                            <p className="text-zinc-500 text-lg font-medium leading-none">
                                                                 Подписка успешно добавлена. <br/>
                                                                 Теперь вы можете включить VPN.
                                                             </p>
@@ -357,11 +357,11 @@ export default function Home() {
                                             ) : (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
                                                     <div className="flex-1 flex flex-col items-center text-center gap-6 px-4">
-                                                        <h2 className="text-4xl font-semibold text-white leading-tight">
+                                                        <h2 className="text-4xl font-semibold text-white leading-none">
                                                             {currentStep?.title}
                                                         </h2>
                                                         
-                                                        <p className="text-zinc-500 text-lg font-medium leading-tight max-w-[280px]">
+                                                        <p className="text-zinc-500 text-lg font-medium leading-none max-w-[280px]">
                                                             {currentStep?.text}
                                                         </p>
                                                     </div>
