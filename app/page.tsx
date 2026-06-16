@@ -17,7 +17,7 @@ const PLATFORMS = {
         icon: '/Apple_logo_black.svg',
         desc: 'iPhone & iPad',
         steps: [
-            { title: 'Установите приложение', text: 'Скачайте v2RayTun (или Streisand) из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
+            { title: 'Установите пaриложение', text: 'Скачайте v2RayTun (или Streisand) из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
             { title: 'Импортируйте профиль', text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.', action: 'Добавить подписку' },
         ],
     },
