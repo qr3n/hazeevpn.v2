@@ -134,6 +134,8 @@ export default function Home() {
                 />
             </div>
 
+            <div className={'absolute w-full h-[100dvh] bg-gradient-to-b from-black to-transparent to-40%'}/>
+
             <div 
                 className="relative z-10 flex h-full flex-col p-4 justify-between" 
                 data-vaul-drawer-wrapper=""
