@@ -94,7 +94,6 @@ export default function Home() {
     useEffect(() => {
         const controls = animate(0, percent, {
             duration: 0.8,
-            ease: 'easeOut',
             onUpdate: (v) => setAnimatedPercent(Math.round(v)),
         });
         return controls.stop;
@@ -125,23 +124,24 @@ export default function Home() {
             setIsCopied(true);
             setTimeout(() => {
                 setIsCopied(false);
-                if (steps && stepIndex === steps.length - 1) {
-                    fireConfetti();
-                }
                 goNext();
-            }, 800);
+            }, 500);
             return;
-        }
-        
-        if (steps && stepIndex === steps.length - 1) {
-            fireConfetti();
         }
         
         goNext();
     };
 
     const handleOpenChange = (open: boolean) => {
-        if (!open) setTimeout(() => { setPlatform(null); setStepIndex(0); setDirection(1); setIsCopied(false); }, 300);
+        if (!open) {
+            if (isSuccess) fireConfetti();
+            setTimeout(() => { 
+                setPlatform(null); 
+                setStepIndex(0); 
+                setDirection(1); 
+                setIsCopied(false); 
+            }, 300);
+        }
     };
 
     // Производные
@@ -444,22 +444,6 @@ export default function Home() {
                                                             >
                                                                 Уже скачано
                                                             </motion.button>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </div>
-                            </Drawer.Content>
-                        </Drawer.Portal>
-                    </Drawer.Root>
-                </div>
-            </div>
-        </div>
-    );
-}
-                         </motion.button>
                                                         )}
                                                     </div>
                                                 </div>
