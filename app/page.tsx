@@ -128,15 +128,19 @@ export default function Home() {
     
     return (
         <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
-        <div className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0">
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0"
+        >
                 <Aurora
                     colorStops={["#7cff67","#B497CF","#5227FF"]}
                     blend={0.5}
                     amplitude={1.0}
                     speed={0.5}
                 />
-
-            </div>
+        </motion.div>
 
             <div className={'absolute w-[200%] h-[100dvh] bg-gradient-to-b from-black to-transparent'}/>
 
