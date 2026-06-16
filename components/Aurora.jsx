@@ -86,6 +86,7 @@ struct ColorStop {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
+  vec2 rotatedUv = 1.0 - uv; // 180 degree rotation (bottom-left -> top-right)
   
   ColorStop colors[3];
   colors[0] = ColorStop(uColorStops[0], 0.0);
@@ -93,25 +94,24 @@ void main() {
   colors[2] = ColorStop(uColorStops[2], 1.0);
   
   vec3 rampColor;
-  COLOR_RAMP(colors, uv.x, rampColor);
+  COLOR_RAMP(colors, rotatedUv.x, rampColor);
   
-  float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
-  height = exp(height);
+  // 2D Noise for "blobby" feel instead of vertical pillars
+  float n1 = snoise(vec2(rotatedUv.x * 1.5 + uTime * 0.05, rotatedUv.y * 1.2 + uTime * 0.1)) * 0.5;
+  float n2 = snoise(vec2(rotatedUv.x * 3.0 - uTime * 0.08, rotatedUv.y * 2.5 + uTime * 0.15)) * 0.2;
+  float noise = (n1 + n2) * uAmplitude;
   
-  // Create a triangular shape from bottom-left
-  // It's tallest at x=0 and tapers off as x increases and y increases
-  float xFactor = pow(1.0 - uv.x, 0.8);
-  float yFactor = pow(1.0 - uv.y, 1.5); // Increased decay for less height
-  height = (xFactor * yFactor * 3.2 - height + 0.3); // Reduced multiplier from 4.5 to 3.2
+  // Radial falloff from new origin (top-right)
+  float dist = length(rotatedUv * vec2(0.8, 1.1));
+  float falloff = smoothstep(1.1, 0.0, dist);
   
-  float intensity = 0.6 * height; // Reduced from 0.8
+  float intensity = falloff * (0.7 + noise) * 1.6;
   
-  float midPoint = 0.20;
+  float midPoint = 0.15;
   float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
   
-  vec3 auroraColor = intensity * rampColor;
-  
-  fragColor = vec4(auroraColor * auroraAlpha, auroraAlpha);
+  vec4 auroraColor = vec4(intensity * rampColor * auroraAlpha, auroraAlpha);
+  fragColor = auroraColor;
 }
 `;
 

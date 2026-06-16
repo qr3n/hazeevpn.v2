@@ -119,7 +119,7 @@ export default function Home() {
     
     return (
         <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
-        <div className="absolute -bottom-[20%] -left-[20%] w-[140%] h-[140%] pointer-events-none z-0">
+        <div className="absolute -top-[40%] -right-[20%] w-[140%] h-[140%] pointer-events-none z-0">
                 <Aurora
                     colorStops={["#7cff67","#B497CF","#5227FF"]}
                     blend={0.5}
