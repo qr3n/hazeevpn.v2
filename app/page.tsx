@@ -277,10 +277,9 @@ export default function Home() {
                                             {platform === null ? (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
                                                     <div className="flex flex-col gap-2 px-1 text-center">
-                                                        <h2 className="text-4xl font-semibold text-white">Выберите устройство</h2>
-                                                        <p className="text-zinc-500 text-base font-medium">Мы подберем лучший способ подключения</p>
+                                                        <h2 className="text-4xl font-semibold text-white leading-tight">Выберите устройство</h2>
+                                                        <p className="text-zinc-500 text-base font-medium leading-tight">Мы подберем лучший способ подключения</p>
                                                     </div>
-
                                                     <div className="grid grid-cols-2 gap-3">
                                                         {(Object.keys(PLATFORMS) as PlatformKey[]).map((key) => {
                                                             const { label, desc } = PLATFORMS[key];
@@ -318,9 +317,8 @@ export default function Home() {
 
                                                                 <div className="flex flex-col items-start gap-1">
                                                                     <span className="text-2xl font-bold text-white leading-none">{label}</span>
-                                                                    <span className="text-zinc-500 text-sm font-medium">{desc}</span>
+                                                                    <span className="text-zinc-500 text-sm font-medium leading-tight">{desc}</span>
                                                                 </div>
-
                                                                 <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center">
                                                                     <Chevron className="text-zinc-400 w-4 h-4" />
                                                                 </div>
@@ -337,7 +335,7 @@ export default function Home() {
                                                             <h2 className="text-4xl font-semibold text-white leading-tight">
                                                                 Готово!
                                                             </h2>
-                                                            <p className="text-zinc-500 text-lg font-medium leading-relaxed">
+                                                            <p className="text-zinc-500 text-lg font-medium leading-tight">
                                                                 Подписка успешно добавлена. <br/>
                                                                 Теперь вы можете включить VPN.
                                                             </p>
@@ -363,7 +361,7 @@ export default function Home() {
                                                             {currentStep?.title}
                                                         </h2>
                                                         
-                                                        <p className="text-zinc-500 text-lg font-medium leading-relaxed max-w-[280px]">
+                                                        <p className="text-zinc-500 text-lg font-medium leading-tight max-w-[280px]">
                                                             {currentStep?.text}
                                                         </p>
                                                     </div>
