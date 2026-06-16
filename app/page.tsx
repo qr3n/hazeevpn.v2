@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, animate, motion } from 'framer-motion';
+import { AnimatePresence, animate, motion, Transition } from 'framer-motion';
 import { Drawer } from 'vaul';
 import Waves from "@/components/Waves";
 import sticker from './hand.json';
@@ -11,7 +11,22 @@ import { useEffect, useState } from "react";
 import 'm3-ripple/ripple.css'
 import {Ripple} from "m3-ripple";
 
-const PLATFORMS = {
+type PlatformKey = 'ios' | 'android' | 'other';
+
+interface Step {
+    title: string;
+    text: string;
+    action: string;
+}
+
+interface PlatformData {
+    label: string;
+    icon: string;
+    desc: string;
+    steps: Step[];
+}
+
+const PLATFORMS: Record<PlatformKey, PlatformData> = {
     ios: {
         label: 'iOS',
         icon: '/Apple_logo_black.svg',
@@ -45,16 +60,16 @@ const PLATFORMS = {
 const DOT_COUNT = 5;
 
 const slideVariants = {
-    enter: (dir) => ({ transform: `translateX(${dir > 0 ? '110%' : '-110%'}) translateZ(0px)` }),
-    exit:  (dir) => ({ transform: `translateX(${dir > 0 ? '-110%' : '110%'}) translateZ(0px)` }),
+    enter: (dir: number) => ({ transform: `translateX(${dir > 0 ? '110%' : '-110%'}) translateZ(0px)` }),
+    exit:  (dir: number) => ({ transform: `translateX(${dir > 0 ? '-110%' : '110%'}) translateZ(0px)` }),
     center: { transform: 'translateX(0%) translateZ(0px)' },
 };
 
 
-const slideTransition = { type: 'spring', stiffness: 300, damping: 28, mass: 0.7 };
-const tapTransition   = { type: 'spring', stiffness: 400, damping: 20 };
+const slideTransition: Transition = { type: 'spring', stiffness: 300, damping: 28, mass: 0.7 };
+const tapTransition: Transition   = { type: 'spring', stiffness: 400, damping: 20 };
 
-function Chevron({ dir = 'right', className = '' }) {
+function Chevron({ dir = 'right', className = '' }: { dir?: 'left' | 'right', className?: string }) {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
             <path d={dir === 'left' ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'} />
@@ -71,9 +86,10 @@ export default function Home() {
     const r          = 40;
 
     const [animatedPercent, setAnimatedPercent] = useState(0);
-    const [platform,  setPlatform]  = useState(null); // null = экран выбора
+    const [platform,  setPlatform]  = useState<PlatformKey | null>(null); // null = экран выбора
     const [stepIndex, setStepIndex] = useState(0);    // 0-2
     const [direction, setDirection] = useState(1);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     useEffect(() => {
         const controls = animate(0, percent, {
@@ -84,7 +100,7 @@ export default function Home() {
         return controls.stop;
     }, [percent]);
 
-    const selectPlatform = (key) => { setDirection(1); setIsAnimating(true); setPlatform(key); setStepIndex(0); };
+    const selectPlatform = (key: PlatformKey) => { setDirection(1); setIsAnimating(true); setPlatform(key); setStepIndex(0); };
     const goNext         = ()    => { setDirection(1);  setIsAnimating(true); setStepIndex(i => i + 1); };
     const goBack         = ()    => {
         setDirection(-1);
@@ -93,7 +109,7 @@ export default function Home() {
         else setStepIndex(i => i - 1);
     };
 
-    const handleOpenChange = (open) => {
+    const handleOpenChange = (open: boolean) => {
         if (!open) setTimeout(() => { setPlatform(null); setStepIndex(0); setDirection(1); }, 300);
     };
 
@@ -101,10 +117,9 @@ export default function Home() {
     const steps       = platform ? PLATFORMS[platform].steps : null;
     const isSuccess   = steps !== null && stepIndex === steps.length;
     const currentStep = steps?.[stepIndex] ?? null;
-    const isLastStep  = isSuccess;
     const activeDot   = platform === null ? 0 : stepIndex + 1;
     const pageKey     = platform === null ? 'select' : (isSuccess ? 'success' : `${platform}-${stepIndex}`);
-    const [isAnimating, setIsAnimating] = useState(false);
+    
     return (
         <div className="flex select-none bg-black h-[100dvh] flex-col p-4 justify-between" data-vaul-drawer-wrapper="">
             <div className="absolute top-0 h-[100dvh] left-0 w-full">
@@ -271,7 +286,9 @@ export default function Home() {
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-3">
-                                                    {Object.entries(PLATFORMS).map(([key, { label, desc }]) => (
+                                                    {(Object.keys(PLATFORMS) as PlatformKey[]).map((key) => {
+                                                        const { label, desc } = PLATFORMS[key];
+                                                        return (
                                                         <motion.button
                                                             key={key}
                                                             onClick={() => selectPlatform(key)}
@@ -312,7 +329,8 @@ export default function Home() {
                                                                 <Chevron className="text-zinc-400 w-4 h-4" />
                                                             </div>
                                                         </motion.button>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         ) : isSuccess ? (
@@ -347,11 +365,11 @@ export default function Home() {
                                             <div className="h-full flex flex-col gap-8 pt-10">
                                                 <div className="flex-1 flex flex-col items-center text-center gap-6 px-4">
                                                     <h2 className="text-4xl font-semibold text-white leading-tight">
-                                                        {currentStep.title}
+                                                        {currentStep?.title}
                                                     </h2>
                                                     
                                                     <p className="text-zinc-500 text-lg font-medium leading-relaxed max-w-[280px]">
-                                                        {currentStep.text}
+                                                        {currentStep?.text}
                                                     </p>
                                                 </div>
 
@@ -363,7 +381,7 @@ export default function Home() {
                                                         className="w-full rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                                                     >
                                                         <Ripple/>
-                                                        {currentStep.action}
+                                                        {currentStep?.action}
                                                     </motion.button>
 
                                                     {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
