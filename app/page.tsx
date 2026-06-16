@@ -360,15 +360,7 @@ export default function Home() {
                                                 </div>
                                             ) : isSuccess ? (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center relative">
-                                                        <motion.button
-                                                            onClick={fireConfetti}
-                                                            whileTap={{ scale: 0.9 }}
-                                                            className="absolute top-0 right-4 p-3 rounded-2xl bg-zinc-900 text-2xl"
-                                                        >
-                                                            🎉
-                                                        </motion.button>
-                                                        
+                                                    <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
                                                         <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
                                                         <div className="flex flex-col gap-4">
                                                             <h2 className="text-4xl font-semibold text-white leading-none">
@@ -452,6 +444,22 @@ export default function Home() {
                                                             >
                                                                 Уже скачано
                                                             </motion.button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </div>
+                            </Drawer.Content>
+                        </Drawer.Portal>
+                    </Drawer.Root>
+                </div>
+            </div>
+        </div>
+    );
+}
+                         </motion.button>
                                                         )}
                                                     </div>
                                                 </div>
