@@ -110,7 +110,7 @@ export default function Home() {
     const handleAction = () => {
         if (currentStep?.action === 'Скопировать ссылку') {
             navigator.clipboard.writeText('vless://hazeevpn-v2-subscription-link');
-            toast.success('Ссылка скопирована');
+            toast.success('Скопировано');
         }
         goNext();
     };
