@@ -55,8 +55,7 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
     },
 };
 
-// 1 экран выбора + 3 шага инструкции + 1 успех
-const DOT_COUNT = 5;
+const DOT_COUNT = 4;
 
 const slideVariants = {
     enter: (dir: number) => ({ transform: `translateX(${dir > 0 ? '110%' : '-110%'}) translateZ(0px)` }),
