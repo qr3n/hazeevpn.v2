@@ -224,8 +224,8 @@ export default function Home() {
                         </Drawer.Trigger>
 
                         <Drawer.Portal>
-                            <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[4000]" />
-                            <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-900 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
+                            <Drawer.Overlay className="fixed inset-0 bg-black/70 z-[4000]" />
+                            <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
                                 <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
 
                                 <Drawer.Title className="sr-only">
