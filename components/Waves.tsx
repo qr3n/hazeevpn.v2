@@ -250,44 +250,67 @@ const Waves: React.FC<WavesProps> = ({
             }
         }
 
+        // Mouse trig and squared early-reject radius hoisted out of the
+        // per-point loop (was recomputed per point); Math.sqrt deferred
+        // until after the cheap squared-distance test passes.
         function movePoints(time: number) {
             const lines = linesRef.current;
             const mouse = mouseRef.current;
             const noise = noiseRef.current;
             const { waveSpeedX, waveSpeedY, waveAmpX, waveAmpY, friction, tension, maxCursorMove } = configRef.current;
-            lines.forEach(pts => {
-                pts.forEach(p => {
-                    const move = noise.perlin2((p.x + time * waveSpeedX) * 0.002, (p.y + time * waveSpeedY) * 0.0015) * 12;
+
+            const cosA = Math.cos(mouse.a);
+            const sinA = Math.sin(mouse.a);
+            const l = Math.max(175, mouse.vs);
+            const lSq = l * l;
+            const mvs = mouse.vs;
+            const msx = mouse.sx;
+            const msy = mouse.sy;
+            const timeX = time * waveSpeedX;
+            const timeY = time * waveSpeedY;
+
+            for (let i = 0; i < lines.length; i++) {
+                const pts = lines[i];
+                for (let j = 0; j < pts.length; j++) {
+                    const p = pts[j];
+
+                    const move = noise.perlin2((p.x + timeX) * 0.002, (p.y + timeY) * 0.0015) * 12;
                     p.wave.x = Math.cos(move) * waveAmpX;
                     p.wave.y = Math.sin(move) * waveAmpY;
 
-                    const dx = p.x - mouse.sx,
-                        dy = p.y - mouse.sy;
-                    const dist = Math.hypot(dx, dy);
-                    const l = Math.max(175, mouse.vs);
-                    if (dist < l) {
+                    const dx = p.x - msx;
+                    const dy = p.y - msy;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < lSq) {
+                        const dist = Math.sqrt(distSq);
                         const s = 1 - dist / l;
                         const f = Math.cos(dist * 0.001) * s;
-                        p.cursor.vx += Math.cos(mouse.a) * f * l * mouse.vs * 0.00065;
-                        p.cursor.vy += Math.sin(mouse.a) * f * l * mouse.vs * 0.00065;
+                        p.cursor.vx += cosA * f * l * mvs * 0.00065;
+                        p.cursor.vy += sinA * f * l * mvs * 0.00065;
                     }
 
-                    p.cursor.vx += (0 - p.cursor.x) * tension;
-                    p.cursor.vy += (0 - p.cursor.y) * tension;
+                    p.cursor.vx += -p.cursor.x * tension;
+                    p.cursor.vy += -p.cursor.y * tension;
                     p.cursor.vx *= friction;
                     p.cursor.vy *= friction;
                     p.cursor.x += p.cursor.vx * 2;
                     p.cursor.y += p.cursor.vy * 2;
-                    p.cursor.x = Math.min(maxCursorMove, Math.max(-maxCursorMove, p.cursor.x));
-                    p.cursor.y = Math.min(maxCursorMove, Math.max(-maxCursorMove, p.cursor.y));
-                });
-            });
+
+                    if (p.cursor.x > maxCursorMove) p.cursor.x = maxCursorMove;
+                    else if (p.cursor.x < -maxCursorMove) p.cursor.x = -maxCursorMove;
+                    if (p.cursor.y > maxCursorMove) p.cursor.y = maxCursorMove;
+                    else if (p.cursor.y < -maxCursorMove) p.cursor.y = -maxCursorMove;
+                }
+            }
         }
 
-        function moved(point: Point, withCursor = true): { x: number; y: number } {
-            const x = point.x + point.wave.x + (withCursor ? point.cursor.x : 0);
-            const y = point.y + point.wave.y + (withCursor ? point.cursor.y : 0);
-            return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
+        // Return raw numbers instead of allocating a new {x, y} object per
+        // point per frame (was ~7000+ allocations/frame -> GC pressure).
+        function movedX(p: Point, withCursor: boolean): number {
+            return Math.round((p.x + p.wave.x + (withCursor ? p.cursor.x : 0)) * 10) / 10;
+        }
+        function movedY(p: Point, withCursor: boolean): number {
+            return Math.round((p.y + p.wave.y + (withCursor ? p.cursor.y : 0)) * 10) / 10;
         }
 
         function drawLines() {
@@ -297,17 +320,25 @@ const Waves: React.FC<WavesProps> = ({
             ctx.clearRect(0, 0, width, height);
             ctx.beginPath();
             ctx.strokeStyle = configRef.current.lineColor;
-            linesRef.current.forEach(points => {
-                let p1 = moved(points[0], false);
-                ctx.moveTo(p1.x, p1.y);
-                points.forEach((p, idx) => {
-                    const isLast = idx === points.length - 1;
-                    p1 = moved(p, !isLast);
-                    const p2 = moved(points[idx + 1] || points[points.length - 1], !isLast);
-                    ctx.lineTo(p1.x, p1.y);
-                    if (isLast) ctx.moveTo(p2.x, p2.y);
-                });
-            });
+
+            const lines = linesRef.current;
+            for (let i = 0; i < lines.length; i++) {
+                const points = lines[i];
+                const len = points.length;
+                if (len === 0) continue;
+
+                ctx.moveTo(movedX(points[0], false), movedY(points[0], false));
+
+                for (let idx = 0; idx < len; idx++) {
+                    const isLast = idx === len - 1;
+                    const p = points[idx];
+                    ctx.lineTo(movedX(p, !isLast), movedY(p, !isLast));
+                    if (isLast) {
+                        const next = points[idx + 1] || points[len - 1];
+                        ctx.moveTo(movedX(next, !isLast), movedY(next, !isLast));
+                    }
+                }
+            }
             ctx.stroke();
         }
 
