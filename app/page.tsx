@@ -402,19 +402,20 @@ export default function Home() {
                                                             onClick={handleAction}
                                                             whileTap={{ scale: 0.97 }}
                                                             animate={{
-                                                                backgroundColor: isCopied ? "#00eb00" : "#ffffff",
-                                                                color: isCopied ? "#ffffff" : "#000000"
+                                                                backgroundColor: isCopied ? "#e4e4e7" : "#ffffff",
+                                                                color: "#000000"
                                                             }}
-                                                            transition={tapTransition}
+                                                            transition={{ duration: 0.1 }}
                                                             className="w-full rounded-3xl py-4 text-xl font-semibold flex items-center justify-center gap-2 overflow-hidden"
                                                         >
                                                             <AnimatePresence mode="wait">
                                                                 {isCopied ? (
                                                                     <motion.div
                                                                         key="check"
-                                                                        initial={{ y: 20, opacity: 0 }}
+                                                                        initial={{ y: 15, opacity: 0 }}
                                                                         animate={{ y: 0, opacity: 1 }}
-                                                                        exit={{ y: -20, opacity: 0 }}
+                                                                        exit={{ y: -15, opacity: 0 }}
+                                                                        transition={{ duration: 0.1 }}
                                                                         className="flex items-center gap-2"
                                                                     >
                                                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -425,9 +426,10 @@ export default function Home() {
                                                                 ) : (
                                                                     <motion.span
                                                                         key="text"
-                                                                        initial={{ y: 20, opacity: 0 }}
+                                                                        initial={{ y: 15, opacity: 0 }}
                                                                         animate={{ y: 0, opacity: 1 }}
-                                                                        exit={{ y: -20, opacity: 0 }}
+                                                                        exit={{ y: -15, opacity: 0 }}
+                                                                        transition={{ duration: 0.1 }}
                                                                     >
                                                                         {currentStep?.action}
                                                                     </motion.span>
