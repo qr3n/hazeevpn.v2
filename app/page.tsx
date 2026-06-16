@@ -275,12 +275,9 @@ export default function Home() {
                                         >
 
                                             {platform === null ? (
-                                                <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex flex-col gap-2 px-1 text-center">
-                                                        <h2 className="text-4xl font-semibold text-white leading-none">Выберите устройство</h2>
-                                                        <p className="text-zinc-500 text-base font-medium leading-none">Мы подберем лучший способ подключения</p>
-                                                    </div>
+                                                <div className="h-full flex flex-col gap-3 pt-6">
                                                     <div className="grid grid-cols-2 gap-3">
+
                                                         {(Object.keys(PLATFORMS) as PlatformKey[]).map((key) => {
                                                             const { label, desc } = PLATFORMS[key];
                                                             return (
