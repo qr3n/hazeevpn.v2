@@ -9,7 +9,6 @@ import rocket from './rocket.json';
 import heart from './heart.json';
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
-import confetti from 'canvas-confetti';
 
 type PlatformKey = 'ios' | 'android' | 'other';
 
