@@ -117,7 +117,7 @@ export default function Home() {
     const pageKey     = platform === null ? 'select' : (isSuccess ? 'success' : `${platform}-${stepIndex}`);
     
     return (
-        <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none">
+        <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
             <div className="absolute inset-0 pointer-events-none z-0">
                 <Waves
                     lineColor="#333"
@@ -138,13 +138,12 @@ export default function Home() {
 
             <div 
                 className="relative z-10 flex h-full flex-col p-4 justify-between" 
-                data-vaul-drawer-wrapper=""
             >
                 <div className="pt-12 relative">
                     <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
-                            фывфыв!
+                            владимир!
                             <Lottie animationData={sticker} loop autoplay className="w-12 h-12 rotate-12 -ml-2 pointer-events-none" />
                         </span>
                     </h1>
@@ -212,7 +211,7 @@ export default function Home() {
                 </div>
 
                 <div className="relative z-10">
-                    <Drawer.Root onOpenChange={handleOpenChange}>
+                    <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
                         <Drawer.Trigger asChild>
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
@@ -225,7 +224,7 @@ export default function Home() {
                         </Drawer.Trigger>
 
                         <Drawer.Portal>
-                            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                            <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[4000]" />
                             <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-900 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
                                 <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
 
@@ -288,7 +287,7 @@ export default function Home() {
                                                                 onClick={() => selectPlatform(key)}
                                                                 whileTap={{ scale: 0.97 }}
                                                                 transition={tapTransition}
-                                                                className={`relative overflow-hidden bg-zinc-800/50 border border-zinc-800 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${
+                                                                className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${
                                                                     key === 'other' ? 'col-span-2' : ''
                                                                 }`}
                                                             >
