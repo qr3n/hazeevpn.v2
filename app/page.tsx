@@ -154,7 +154,7 @@ export default function Home() {
                 />
         </motion.div>
 
-            <div className={'absolute w-[200%] h-[100dvh] bg-gradient-to-br from-black to-transparent'}/>
+            <div className={'absolute w-[200%] h-[100dvh] bg-gradient-to-br from-black opacity-90 to-transparent'}/>
 
             <div 
                 className="relative z-10 flex h-full flex-col p-4 justify-between" 
