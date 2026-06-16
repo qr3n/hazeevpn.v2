@@ -393,17 +393,3 @@ export default function Home() {
         </div>
     );
 }
-</div>
-        </div>
-    );
-}
-             </AnimatePresence>
-                                </div>
-                            </Drawer.Content>
-                        </Drawer.Portal>
-                    </Drawer.Root>
-                </div>
-            </div>
-        </div>
-    );
-}
