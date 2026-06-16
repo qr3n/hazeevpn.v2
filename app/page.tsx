@@ -8,8 +8,6 @@ import rocket from './rocket.json';
 import heart from './heart.json';
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
-import 'm3-ripple/ripple.css'
-import {Ripple} from "m3-ripple";
 
 type PlatformKey = 'ios' | 'android' | 'other';
 
@@ -149,7 +147,7 @@ export default function Home() {
 
                 <div className="w-full h-[84px] mt-12 rounded-3xl flex gap-3">
                     <div className="relative shadow-2xl shadow-black bg-zinc-800 rounded-2xl w-full h-full p-4 flex flex-col justify-between">
-                        <Ripple />
+                        
                         <span className="relative text-zinc-400 text-xs font-semibold tracking-widest uppercase">Статус</span>
                         <div className="relative flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#00eb00]" />
@@ -157,14 +155,14 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="relative shadow-2xl shadow-black bg-zinc-800 rounded-2xl w-full h-full p-4 flex flex-col justify-between">
-                        <Ripple/>
+                        
                         <span className="relative text-zinc-400 text-xs font-semibold tracking-widest uppercase">Истекает</span>
                         <span className="relative text-white text-lg font-semibold">14 янв 2026</span>
                     </div>
                 </div>
 
                 <div className="relative w-full shadow-2xl shadow-black bg-zinc-900 mt-4 rounded-3xl p-5 xss:pl-3">
-                    <Ripple/>
+                    
                     <div className="relative flex items-center gap-5">
                         <div className="relative flex-shrink-0 w-[84px] h-[84px]">
                             <svg width="84" height="84" viewBox="0 0 100 100" className="w-full h-full">
@@ -218,9 +216,8 @@ export default function Home() {
                         <motion.button
                             whileTap={{ scale: 0.95 }}
                             transition={tapTransition}
-                            className="shadow-2xl shadow-black flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold"
+                            className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 !bg-white text-2xl text-black font-semibold"
                         >
-                            <Ripple/>
                             Подключиться
                             <Lottie animationData={rocket} loop autoplay className="w-8 h-8" />
                         </motion.button>
@@ -298,7 +295,7 @@ export default function Home() {
                                                                 key === 'other' ? 'col-span-2' : ''
                                                             }`}
                                                         >
-                                                            <Ripple/>
+                                                            
                                                             <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4">
                                                                 {key === 'ios' && (
                                                                     <svg viewBox="0 0 814 1000" className="w-6 h-6 fill-white opacity-90">
@@ -353,9 +350,8 @@ export default function Home() {
                                                         <motion.button
                                                             whileTap={{ scale: 0.97 }}
                                                             transition={tapTransition}
-                                                            className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
+                                                            className="w-full relative rounded-3xl py-4 !bg-white text-xl text-black font-semibold"
                                                         >
-                                                            <Ripple/>
                                                             Закрыть
                                                         </motion.button>
                                                     </Drawer.Close>
@@ -378,9 +374,8 @@ export default function Home() {
                                                         onClick={goNext}
                                                         whileTap={{ scale: 0.97 }}
                                                         transition={tapTransition}
-                                                        className="w-full rounded-3xl py-4 bg-white text-xl text-black font-semibold"
+                                                        className="w-full rounded-3xl py-4 !bg-white text-xl text-black font-semibold"
                                                     >
-                                                        <Ripple/>
                                                         {currentStep?.action}
                                                     </motion.button>
 
@@ -391,7 +386,7 @@ export default function Home() {
                                                             transition={tapTransition}
                                                             className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                                                         >
-                                                            <Ripple/>
+                                                            
                                                             Уже скачано
                                                         </motion.button>
                                                     )}
