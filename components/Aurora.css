@@ -1,4 +1,12 @@
 .aurora-container {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
+    /*
+     * Promote to its own compositor layer.
+     * The browser won't repaint surrounding content when the canvas updates,
+     * and scrolling / UI animations on top won't trigger GPU readbacks.
+     */
+    will-change: transform;
+    /* Prevent inline-gap under the canvas (display:block set in JS, but belt+suspenders). */
+    line-height: 0;
 }

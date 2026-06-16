@@ -207,5 +207,5 @@ export default function Aurora(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amplitude]);
 
-  return <div ref={ctnDom} className={`aurora-container ${className}`} />;
+  return <div ref={ctnDom} className={`transform-gpu aurora-container ${className}`} />;
 }
