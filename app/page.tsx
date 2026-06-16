@@ -126,6 +126,7 @@ export default function Home() {
                 setStepIndex(0); 
                 setDirection(1); 
                 setIsCopied(false); 
+                setIsBusy(false);
             }, 300);
         }
     };
