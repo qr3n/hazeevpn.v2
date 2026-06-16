@@ -36,7 +36,7 @@ export default function RootLayout({
                       borderRadius: '16px',
                       border: '1px solid #27272a',
                       fontSize: '14px',
-                      fontWeight: 500,
+                      fontWeight: 600,
                   },
               }}
           />
