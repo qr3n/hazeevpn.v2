@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { TelegramProvider } from "@/lib/telegram-provider";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -24,7 +25,9 @@ export default function RootLayout({
       className={`${montserrat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-          {children}
+          <TelegramProvider>
+            {children}
+          </TelegramProvider>
       </body>
     </html>
   );

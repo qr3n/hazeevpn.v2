@@ -9,6 +9,7 @@ import rocket from './rocket.json';
 import heart from './heart.json';
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
+import { useTelegram } from "@/lib/telegram-provider";
 
 type PlatformKey = 'ios' | 'android' | 'other';
 
@@ -76,6 +77,7 @@ function Chevron({ dir = 'right', className = '' }: { dir?: 'left' | 'right', cl
 }
 
 export default function Home() {
+    const { user } = useTelegram();
     const totalGb    = 500;
     const usedGb     = 300;
     const incomingGb = 187;
@@ -88,6 +90,7 @@ export default function Home() {
     const [stepIndex, setStepIndex] = useState(0);    // 0-2
     const [direction, setDirection] = useState(1);
     const [isCopied, setIsCopied] = useState(false);
+    const [isBusy, setIsBusy] = useState(false);
 
     useEffect(() => {
         const controls = animate(0, percent, {
@@ -97,20 +100,43 @@ export default function Home() {
         return controls.stop;
     }, [percent]);
 
-    const selectPlatform = (key: PlatformKey) => { setDirection(1); setPlatform(key); setStepIndex(0); };
-    const goNext         = ()    => { setDirection(1);  setStepIndex(i => i + 1); };
-    const goBack         = ()    => {
+    const selectPlatform = (key: PlatformKey) => { 
+        if (isBusy) return;
+        setDirection(1); 
+        setPlatform(key); 
+        setStepIndex(0); 
+    };
+
+    const goNext = () => {
+        if (isBusy) return;
+        if (steps && stepIndex >= steps.length) return;
+        
+        setIsBusy(true);
+        setDirection(1);
+        setStepIndex(i => i + 1);
+        setTimeout(() => setIsBusy(false), 400);
+    };
+
+    const goBack = () => {
+        if (isBusy) return;
+        
+        setIsBusy(true);
         setDirection(-1);
         if (stepIndex === 0) setPlatform(null);
         else setStepIndex(i => i - 1);
+        setTimeout(() => setIsBusy(false), 400);
     };
 
     const handleAction = () => {
+        if (isBusy) return;
+
         if (currentStep?.action === 'Скопировать ссылку') {
+            setIsBusy(true);
             navigator.clipboard.writeText('vless://hazeevpn-v2-subscription-link');
             setIsCopied(true);
             setTimeout(() => {
                 setIsCopied(false);
+                setIsBusy(false); 
                 goNext();
             }, 400); 
             return;
@@ -163,7 +189,7 @@ export default function Home() {
                     <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
-                            владимир!
+                            {user?.first_name?.toLowerCase() || 'владимир'}!
                             <Lottie animationData={sticker} loop autoplay className="w-12 h-12 rotate-12 -ml-2 pointer-events-none" />
                         </span>
                     </h1>
@@ -296,7 +322,7 @@ export default function Home() {
                                         >
 
                                             {platform === null ? (
-                                                <div className="h-full flex flex-col gap-3 pt-6">
+                                                <div className="h-full flex flex-col px-4 pt-6">
                                                     <div className="grid grid-cols-2 gap-3">
 
                                                         {(Object.keys(PLATFORMS) as PlatformKey[]).map((key) => {
