@@ -9,6 +9,7 @@ import rocket from './rocket.json';
 import heart from './heart.json';
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type PlatformKey = 'ios' | 'android' | 'other';
 
@@ -104,6 +105,14 @@ export default function Home() {
         setDirection(-1);
         if (stepIndex === 0) setPlatform(null);
         else setStepIndex(i => i - 1);
+    };
+
+    const handleAction = () => {
+        if (currentStep?.action === 'Скопировать ссылку') {
+            navigator.clipboard.writeText('vless://hazeevpn-v2-subscription-link');
+            toast.success('Ссылка скопирована');
+        }
+        goNext();
     };
 
     const handleOpenChange = (open: boolean) => {
