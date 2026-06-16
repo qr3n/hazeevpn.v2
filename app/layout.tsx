@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -26,21 +25,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
           {children}
-          <Toaster
-              position="top-center"
-              toastOptions={{
-                  duration: 2000,
-                  style: {
-                      background: '#18181b',
-                      color: '#fff',
-                      borderRadius: '16px',
-                      border: '1px solid #27272a',
-                      fontSize: '14px',
-                      fontWeight: 600,
-                  },
-              }}
-          />
       </body>
     </html>
   );
 }
+

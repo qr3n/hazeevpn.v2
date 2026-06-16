@@ -9,7 +9,7 @@ import rocket from './rocket.json';
 import heart from './heart.json';
 import Lottie from "lottie-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import confetti from 'canvas-confetti';
 
 type PlatformKey = 'ios' | 'android' | 'other';
 
@@ -89,6 +89,7 @@ export default function Home() {
     const [platform,  setPlatform]  = useState<PlatformKey | null>(null); // null = экран выбора
     const [stepIndex, setStepIndex] = useState(0);    // 0-2
     const [direction, setDirection] = useState(1);
+    const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
         const controls = animate(0, percent, {
@@ -98,6 +99,17 @@ export default function Home() {
         });
         return controls.stop;
     }, [percent]);
+
+    const fireConfetti = () => {
+        const colors = ['#5227FF', '#00eb00', '#ffffff', '#7cff67', '#B497CF'];
+        confetti({
+            particleCount: Math.floor(Math.random() * 60) + 40,
+            spread: Math.floor(Math.random() * 60) + 60,
+            origin: { y: 0.7 },
+            colors: colors,
+            disableForReducedMotion: true
+        });
+    };
 
     const selectPlatform = (key: PlatformKey) => { setDirection(1); setPlatform(key); setStepIndex(0); };
     const goNext         = ()    => { setDirection(1);  setStepIndex(i => i + 1); };
@@ -110,13 +122,26 @@ export default function Home() {
     const handleAction = () => {
         if (currentStep?.action === 'Скопировать ссылку') {
             navigator.clipboard.writeText('vless://hazeevpn-v2-subscription-link');
-            toast.success('Скопировано');
+            setIsCopied(true);
+            setTimeout(() => {
+                setIsCopied(false);
+                if (steps && stepIndex === steps.length - 1) {
+                    fireConfetti();
+                }
+                goNext();
+            }, 800);
+            return;
         }
+        
+        if (steps && stepIndex === steps.length - 1) {
+            fireConfetti();
+        }
+        
         goNext();
     };
 
     const handleOpenChange = (open: boolean) => {
-        if (!open) setTimeout(() => { setPlatform(null); setStepIndex(0); setDirection(1); }, 300);
+        if (!open) setTimeout(() => { setPlatform(null); setStepIndex(0); setDirection(1); setIsCopied(false); }, 300);
     };
 
     // Производные
@@ -309,7 +334,7 @@ export default function Home() {
                                                                     {key === 'android' && (
                                                                         <svg viewBox="0 0 553 553" className="w-6 h-6 fill-white opacity-80">
                                                                             <path d="M76.774,179.141c-9.529,0-17.614,3.323-24.26,9.969c-6.646,6.646-9.97,14.621-9.97,23.929v142.914 c0,9.541,3.323,17.619,9.97,24.266c6.646,6.646,14.731,9.97,24.26,9.97c9.522,0,17.558-3.323,24.101-9.97 c6.53-6.646,9.804-14.725,9.804-24.266V213.039c0-9.309-3.323-17.283-9.97-23.929C94.062,182.464,86.082,179.141,76.774,179.141z" />
-                                                                            <path d="M351.972,50.847L375.57,7.315c1.549-2.882,0.998-5.092-1.658-6.646c-2.883-1.34-5.098-0.661-6.646,1.989l-23.928,43.88 c-21.055-9.309-43.324-13.972-66.807-13.972c-23.488,0-45.759,4.664-66.806,13.972l-23.929-43.88 c-1.555-2.65-3.77-3.323-6.646-1.989c-2.662,1.561-3.213,3.764-1.658,6.646l23.599,43.532 c-23.929,12.203-42.987,29.198-57.167,51.022c-14.18,21.836-21.273,45.698-21.273,71.628h307.426 c0-25.924-7.094-49.787-21.273-71.628C394.623,80.045,375.675,63.05,351.972,50.847z M215.539,114.165 c-2.552,2.558-5.6,3.831-9.143,3.831c-3.55,0-6.536-1.273-8.972-3.831c-2.436-2.546-3.654-5.582-3.654-9.137 c0-3.543,1.218-6.585,3.654-9.137c2.436-2.546,5.429-3.819,8.972-3.819s6.591,1.273,9.143,3.819 c2.546,2.558,3.825,5.594,3.825,9.137C219.357,108.577,218.079,111.619,215.539,114.165z M355.625,114.165 c-2.441,2.558-5.434,3.831-8.971,3.831c-3.551,0-6.598-1.273-9.145-3.831c-2.551-2.546-3.824-5.582-3.824-9.137 c0-3.543,1.273-6.585,3.824-9.137c2.547-2.546,5.594-3.819,9.145-3.819c3.543,0,6.529,1.273,8.971,3.819 c2.438,2.558,3.654,5.594,3.654,9.137C359.279,108.577,358.062,111.619,355.625,114.165z" />
+                                                                            <path d="M351.972,50.847L375.57,7.315c1.549-2.882,0.998-5.092-1.658-6.646c-2.883-1.34-5.098-0.661-6.646,1.989l-23.928,43.88 c-21.055-9.309-43.324-13.972-66.807-13.972c-23.488,0-45.759,4.664-66.806,13.972l-23.929-43.88 c-1.555-2.65-3.77-3.323-6.646-1.989c-2.662,1.561-3.213,3.764-1.658,6.646l23.599,43.532 c-23.929,12.203-42.987,29.198-57.167,51.022c-14.18,21.836-21.273,45.698-21.273,71.628h307.426 c0-25.924-7.094-49.787-21.273-71.628C394.623,80.045,375.675,63.05,351.972,50.847z M215.539,114.165 c-2.552,2.558-5.6,3.831-9.143,3.831c-3.55,0-6.536-1.273-8.972-3.831c-2.436-2.546-3.654-5.582-3.654-9.137 c0-3.543,1.218-6.585,3.654-9.137c2.436-2.546,5.429-3.819,8.972-3.819s6.591,1.273,9.143,3.819 c2.546,2.558,3.825,5.594,3.825,9.137C219.357,108.577,218.079,111.619,215.539,114.165z M355.625,114.165 c-2.441,2.558-5.434,3.831-8.971,3.831c-3.551,0-6.598-1.273-9.145-3.831c-2.551-2.546-3.824-5.582-3.824-9.137 c0-3.543,1.218-6.585,3.824-9.137c2.547-2.546,5.594-3.819,9.145-3.819c3.543,0,6.529,1.273,8.971,3.819 c2.438,2.558,3.654,5.594,3.654,9.137C359.279,108.577,358.062,111.619,355.625,114.165z" />
                                                                             <path d="M123.971,406.804c0,10.202,3.543,18.838,10.63,25.925c7.093,7.087,15.729,10.63,25.924,10.63h24.596l0.337,75.454 c0,9.528,3.323,17.619,9.969,24.266s14.627,9.97,23.929,9.97c9.523,0,17.613-3.323,24.26-9.97s9.97-14.737,9.97-24.266v-75.447 h45.864v75.447c0,9.528,3.322,17.619,9.969,24.266s14.73,9.97,24.26,9.97c9.523,0,17.613-3.323,24.26-9.97 s9.969-14.737,9.969-24.266v-75.447h24.928c9.969,0,18.494-3.544,25.594-10.631c7.086-7.087,10.631-15.723,10.631-25.924V185.45 H123.971V406.804z" />
                                                                             <path d="M476.275,179.141c-9.309,0-17.283,3.274-23.93,9.804c-6.646,6.542-9.969,14.578-9.969,24.094v142.914 c0,9.541,3.322,17.619,9.969,24.266s14.627,9.97,23.93,9.97c9.523,0,17.613-3.323,24.26-9.97s9.969-14.725,9.969-24.266V213.039 c0-9.517-3.322-17.552-9.969-24.094C493.888,182.415,485.798,179.141,476.275,179.141z" />
                                                                         </svg>
@@ -335,7 +360,15 @@ export default function Home() {
                                                 </div>
                                             ) : isSuccess ? (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
+                                                    <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center relative">
+                                                        <motion.button
+                                                            onClick={fireConfetti}
+                                                            whileTap={{ scale: 0.9 }}
+                                                            className="absolute top-0 right-4 p-3 rounded-2xl bg-zinc-900 text-2xl"
+                                                        >
+                                                            🎉
+                                                        </motion.button>
+                                                        
                                                         <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
                                                         <div className="flex flex-col gap-4">
                                                             <h2 className="text-4xl font-semibold text-white leading-none">
@@ -376,10 +409,38 @@ export default function Home() {
                                                         <motion.button
                                                             onClick={handleAction}
                                                             whileTap={{ scale: 0.97 }}
+                                                            animate={{
+                                                                backgroundColor: isCopied ? "#00eb00" : "#ffffff",
+                                                                color: isCopied ? "#ffffff" : "#000000"
+                                                            }}
                                                             transition={tapTransition}
-                                                            className="w-full rounded-3xl py-4 !bg-white text-xl text-black font-semibold"
+                                                            className="w-full rounded-3xl py-4 text-xl font-semibold flex items-center justify-center gap-2 overflow-hidden"
                                                         >
-                                                            {currentStep?.action}
+                                                            <AnimatePresence mode="wait">
+                                                                {isCopied ? (
+                                                                    <motion.div
+                                                                        key="check"
+                                                                        initial={{ y: 20, opacity: 0 }}
+                                                                        animate={{ y: 0, opacity: 1 }}
+                                                                        exit={{ y: -20, opacity: 0 }}
+                                                                        className="flex items-center gap-2"
+                                                                    >
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                                            <polyline points="20 6 9 17 4 12" />
+                                                                        </svg>
+                                                                        Скопировано
+                                                                    </motion.div>
+                                                                ) : (
+                                                                    <motion.span
+                                                                        key="text"
+                                                                        initial={{ y: 20, opacity: 0 }}
+                                                                        animate={{ y: 0, opacity: 1 }}
+                                                                        exit={{ y: -20, opacity: 0 }}
+                                                                    >
+                                                                        {currentStep?.action}
+                                                                    </motion.span>
+                                                                )}
+                                                            </AnimatePresence>
                                                         </motion.button>
 
                                                         {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
