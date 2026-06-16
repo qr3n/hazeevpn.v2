@@ -86,7 +86,10 @@ struct ColorStop {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
-  vec2 rotatedUv = 1.0 - uv; // 180 degree rotation (bottom-left -> top-right)
+  
+  // Center horizontally, stay at top
+  // We use abs(uv.x - 0.5) to make it symmetrical and centered
+  vec2 blobUv = vec2(abs(uv.x - 0.5) * 1.5, 1.0 - uv.y);
   
   ColorStop colors[3];
   colors[0] = ColorStop(uColorStops[0], 0.0);
@@ -94,16 +97,16 @@ void main() {
   colors[2] = ColorStop(uColorStops[2], 1.0);
   
   vec3 rampColor;
-  COLOR_RAMP(colors, rotatedUv.x, rampColor);
+  COLOR_RAMP(colors, uv.x, rampColor);
   
-  // 2D Noise for "blobby" feel instead of vertical pillars
-  float n1 = snoise(vec2(rotatedUv.x * 1.5 + uTime * 0.05, rotatedUv.y * 1.2 + uTime * 0.1)) * 0.5;
-  float n2 = snoise(vec2(rotatedUv.x * 3.0 - uTime * 0.08, rotatedUv.y * 2.5 + uTime * 0.15)) * 0.2;
+  // 2D Noise for "blobby" feel
+  float n1 = snoise(vec2(uv.x * 1.5 + uTime * 0.05, uv.y * 1.2 + uTime * 0.1)) * 0.5;
+  float n2 = snoise(vec2(uv.x * 3.0 - uTime * 0.08, uv.y * 2.5 + uTime * 0.15)) * 0.2;
   float noise = (n1 + n2) * uAmplitude;
   
-  // Radial falloff from new origin (top-right)
-  float dist = length(rotatedUv * vec2(0.8, 1.1));
-  float falloff = smoothstep(1.1, 0.0, dist);
+  // Radial falloff from top-center
+  float dist = length(blobUv * vec2(1.0, 1.2));
+  float falloff = smoothstep(1.0, 0.0, dist);
   
   float intensity = falloff * (0.7 + noise) * 1.6;
   
