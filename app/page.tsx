@@ -119,12 +119,12 @@ export default function Home() {
     
     return (
         <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
-            <div className="absolute bottom-0 left-0 pointer-events-none z-0">
+        <div className="absolute -bottom-[20%] -left-[20%] w-[140%] h-[140%] pointer-events-none z-0">
                 <Aurora
                     colorStops={["#7cff67","#B497CF","#5227FF"]}
                     blend={0.5}
-                    amplitude={1.0}
-                    speed={1}
+                    amplitude={0.3}
+                    speed={0.5}
                 />
             </div>
 
