@@ -139,7 +139,7 @@ export default function Home() {
                 data-vaul-drawer-wrapper=""
             >
                 <div className="pt-12 relative">
-                    <h1 className="text-white text-5xl xss:text-4xl font-semibold">
+                    <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.9] tracking-tight">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
                             фывфыв!
@@ -147,7 +147,7 @@ export default function Home() {
                         </span>
                     </h1>
 
-                    <div className="w-full h-[84px] mt-12 rounded-3xl flex gap-3">
+                    <div className="w-full h-[84px] mt-8 rounded-3xl flex gap-3">
                         <div className="relative shadow-2xl shadow-black bg-zinc-800 rounded-2xl w-full h-full p-4 flex flex-col justify-between">
                             <span className="relative text-zinc-400 text-xs font-semibold tracking-widest uppercase">Статус</span>
                             <div className="relative flex items-center gap-2">
@@ -224,7 +224,7 @@ export default function Home() {
 
                         <Drawer.Portal>
                             <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-                            <Drawer.Content className="rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-900 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
+                            <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-900 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
                                 <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
 
                                 <Drawer.Title className="sr-only">
