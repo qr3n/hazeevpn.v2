@@ -361,7 +361,7 @@ export default function Home() {
 
                                                     <div className="flex flex-col gap-2 pb-2">
                                                         <motion.button
-                                                            onClick={goNext}
+                                                            onClick={handleAction}
                                                             whileTap={{ scale: 0.97 }}
                                                             transition={tapTransition}
                                                             className="w-full rounded-3xl py-4 !bg-white text-xl text-black font-semibold"
@@ -384,6 +384,20 @@ export default function Home() {
                                             )}
                                         </motion.div>
                                     </AnimatePresence>
+                                </div>
+                            </Drawer.Content>
+                        </Drawer.Portal>
+                    </Drawer.Root>
+                </div>
+            </div>
+        </div>
+    );
+}
+</div>
+        </div>
+    );
+}
+             </AnimatePresence>
                                 </div>
                             </Drawer.Content>
                         </Drawer.Portal>
