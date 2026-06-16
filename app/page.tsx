@@ -346,8 +346,8 @@ export default function Home() {
                                                     </div>
                                                 </div>
                                             ) : isSuccess ? (
-                                                <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
+                                                <div className="h-full flex flex-col px-4">
+                                                    <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
                                                         <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
                                                         <div className="flex flex-col gap-4">
                                                             <h2 className="text-4xl font-semibold text-white leading-none">
@@ -360,7 +360,7 @@ export default function Home() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex flex-col gap-2 pb-2">
+                                                    <div className="h-[140px] flex flex-col justify-end pb-4">
                                                         <Drawer.Close asChild>
                                                             <motion.button
                                                                 whileTap={{ scale: 0.97 }}
@@ -373,8 +373,8 @@ export default function Home() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex-1 flex flex-col items-center text-center gap-4 px-4">
+                                                <div className="h-full flex flex-col px-4">
+                                                    <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">
                                                         <h2 className="text-4xl font-semibold text-white leading-none">
                                                             {currentStep?.title}
                                                         </h2>
@@ -384,7 +384,7 @@ export default function Home() {
                                                         </p>
                                                     </div>
 
-                                                    <div className="flex flex-col gap-2 pb-2">
+                                                    <div className="h-[140px] flex flex-col justify-end gap-2 pb-4">
                                                         <motion.button
                                                             onClick={handleAction}
                                                             whileTap={{ scale: 0.97 }}
