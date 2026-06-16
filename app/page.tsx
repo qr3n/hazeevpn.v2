@@ -3,6 +3,7 @@
 import { AnimatePresence, animate, motion, Transition } from 'framer-motion';
 import { Drawer } from 'vaul';
 import Waves from "@/components/Waves";
+import Aurora from "@/components/Aurora";
 import sticker from './hand.json';
 import rocket from './rocket.json';
 import heart from './heart.json';
@@ -118,19 +119,12 @@ export default function Home() {
     
     return (
         <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
-            <div className="absolute inset-0 pointer-events-none z-0">
-                <Waves
-                    lineColor="#333"
-                    backgroundColor="#000"
-                    waveSpeedX={0.0125}
-                    waveSpeedY={0.01}
-                    waveAmpX={40}
-                    waveAmpY={20}
-                    friction={0.9}
-                    tension={0.01}
-                    maxCursorMove={120}
-                    xGap={12}
-                    yGap={36}
+            <div className="absolute bottom-0 left-0 pointer-events-none z-0">
+                <Aurora
+                    colorStops={["#7cff67","#B497CF","#5227FF"]}
+                    blend={0.5}
+                    amplitude={1.0}
+                    speed={1}
                 />
             </div>
 
