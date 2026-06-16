@@ -328,7 +328,7 @@ export default function Home() {
                                                 <div className="h-full flex flex-col gap-8 pt-10">
                                                     <div className="flex-1 flex flex-col items-center justify-center gap-6 px-6 text-center">
                                                         <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
-                                                        <div className="flex flex-col gap-2">
+                                                        <div className="flex flex-col gap-4">
                                                             <h2 className="text-4xl font-semibold text-white leading-none">
                                                                 Готово!
                                                             </h2>
@@ -353,7 +353,7 @@ export default function Home() {
                                                 </div>
                                             ) : (
                                                 <div className="h-full flex flex-col gap-8 pt-10">
-                                                    <div className="flex-1 flex flex-col items-center text-center gap-6 px-4">
+                                                    <div className="flex-1 flex flex-col items-center text-center gap-4 px-4">
                                                         <h2 className="text-4xl font-semibold text-white leading-none">
                                                             {currentStep?.title}
                                                         </h2>
