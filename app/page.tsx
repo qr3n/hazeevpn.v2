@@ -99,17 +99,6 @@ export default function Home() {
         return controls.stop;
     }, [percent]);
 
-    const fireConfetti = () => {
-        const colors = ['#5227FF', '#00eb00', '#ffffff', '#7cff67', '#B497CF'];
-        confetti({
-            particleCount: Math.floor(Math.random() * 60) + 40,
-            spread: Math.floor(Math.random() * 60) + 60,
-            origin: { y: 0.7 },
-            colors: colors,
-            disableForReducedMotion: true
-        });
-    };
-
     const selectPlatform = (key: PlatformKey) => { setDirection(1); setPlatform(key); setStepIndex(0); };
     const goNext         = ()    => { setDirection(1);  setStepIndex(i => i + 1); };
     const goBack         = ()    => {
@@ -125,7 +114,7 @@ export default function Home() {
             setTimeout(() => {
                 setIsCopied(false);
                 goNext();
-            }, 500);
+            }, 400); 
             return;
         }
         
@@ -134,7 +123,6 @@ export default function Home() {
 
     const handleOpenChange = (open: boolean) => {
         if (!open) {
-            if (isSuccess) fireConfetti();
             setTimeout(() => { 
                 setPlatform(null); 
                 setStepIndex(0); 
@@ -402,7 +390,7 @@ export default function Home() {
                                                             onClick={handleAction}
                                                             whileTap={{ scale: 0.97 }}
                                                             animate={{
-                                                                backgroundColor: isCopied ? "#e4e4e7" : "#ffffff",
+                                                                backgroundColor: isCopied ? "#d1d5db" : "#ffffff",
                                                                 color: "#000000"
                                                             }}
                                                             transition={{ duration: 0.1 }}
