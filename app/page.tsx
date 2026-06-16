@@ -123,9 +123,10 @@ export default function Home() {
                 <Aurora
                     colorStops={["#7cff67","#B497CF","#5227FF"]}
                     blend={0.5}
-                    amplitude={0.3}
+                    amplitude={1.0}
                     speed={0.5}
                 />
+
             </div>
 
             <div className={'absolute w-full h-[100dvh] bg-gradient-to-b from-black to-transparent to-40%'}/>

@@ -101,10 +101,10 @@ void main() {
   // Create a triangular shape from bottom-left
   // It's tallest at x=0 and tapers off as x increases and y increases
   float xFactor = pow(1.0 - uv.x, 0.8);
-  float yFactor = pow(1.0 - uv.y, 1.2);
-  height = (xFactor * yFactor * 4.5 - height + 0.3);
+  float yFactor = pow(1.0 - uv.y, 1.5); // Increased decay for less height
+  height = (xFactor * yFactor * 3.2 - height + 0.3); // Reduced multiplier from 4.5 to 3.2
   
-  float intensity = 0.8 * height;
+  float intensity = 0.6 * height; // Reduced from 0.8
   
   float midPoint = 0.20;
   float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
