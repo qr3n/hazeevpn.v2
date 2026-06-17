@@ -192,11 +192,10 @@ PlatformSelect.displayName = 'PlatformSelect';
 
 // ─── QrScreen ──────────────────────────────────────────────────────────────
 
-const QrScreen = memo(({ url, onBack }: { url: string; onBack: () => void }) => (
+const QrScreen = memo(({ url, onNext }: { url: string; onNext: () => void }) => (
     <div className="h-full flex flex-col px-4">
-        <div className="flex-1 flex flex-col items-center justify-center text-center gap-8">
-            <h2 className="text-4xl font-semibold text-white leading-none">QR-код</h2>
-            <div className="bg-white p-6 rounded-4xl">
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-8 pt-4">
+            <div className="bg-white p-6 rounded-4xl shadow-2xl shadow-white/5">
                 <QRCodeSVG
                     value={url}
                     size={200}
@@ -212,17 +211,17 @@ const QrScreen = memo(({ url, onBack }: { url: string; onBack: () => void }) => 
                     }}
                 />
             </div>
-            <p className="text-zinc-500 text-lg font-medium leading-none max-w-[280px]">
+            <p className="text-zinc-500 text-lg font-medium leading-tight max-w-[280px]">
                 Отсканируйте этот код в приложении для импорта профиля.
             </p>
         </div>
         <div className="h-[140px] flex flex-col justify-end pb-4">
             <motion.button
-                onClick={onBack} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
+                onClick={onNext} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
                 transition={TAP_TRANSITION} style={gpuStyle}
-                className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
+                className="w-full rounded-3xl py-4 bg-white text-xl text-black font-semibold"
             >
-                Назад
+                Далее
             </motion.button>
         </div>
     </div>
@@ -388,8 +387,14 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         [withGuard]
     );
     const goBack = useCallback(
-        () => withGuard(() => dispatch({ type: 'BACK' })),
-        [withGuard]
+        () => withGuard(() => {
+            if (showQr) {
+                setShowQr(false);
+            } else {
+                dispatch({ type: 'BACK' });
+            }
+        }),
+        [withGuard, showQr]
     );
 
     const handleAction = useCallback(() => {
@@ -412,31 +417,35 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             window.open('https://apps.apple.com/app/v2raytun/id6476628951', '_blank');
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
-        } else if (action === 'Добавить подписку') {
-            // Используем протоколы приложений (happ:// или v2raytun://)
-            const deepLink = nav.platform === 'ios'
-                ? `happ://add/${subscriptionUrl}`
-                : `happ://add/${subscriptionUrl}`;
+        } else if (action === 'Добавить подписку' || action === 'Я импортировал') {
+            // Используем протоколы приложений (happ://)
+            const deepLink = `happ://add/${subscriptionUrl}`;
             
-            // Если Happ поддерживает свою универсальную схему:
-            // const deepLink = `happ://add/${subscriptionUrl}`;
-
             const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
             const redirectUrl = withRedirectPage(finalLink);
 
             const tg = getTelegramWebApp();
+            
+            // Если это действие 'Я импортировал', просто идем дальше
+            if (action === 'Я импортировал') {
+                withGuard(() => dispatch({ type: 'NEXT' }));
+                return;
+            }
+
+            // Иначе открываем ссылку
             if (tg?.openLink && !finalLink.startsWith('http')) {
-                // Открываем локальный редиректор во внешнем браузере
                 tg.openLink(redirectUrl, { try_browser: true });
             } else if (tg?.openLink && finalLink.startsWith('http')) {
                 tg.openLink(finalLink, { try_browser: true });
             } else {
                 window.location.href = finalLink;
             }
+            
+            withGuard(() => dispatch({ type: 'NEXT' }));
+        } else {
+            withGuard(() => dispatch({ type: 'NEXT' }));
         }
-
-        withGuard(() => dispatch({ type: 'NEXT' }));
-    }, [currentStep?.action, subscriptionUrl, withGuard]);
+    }, [currentStep?.action, subscriptionUrl, nav.platform, withGuard]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         if (!open) setTimeout(() => {
