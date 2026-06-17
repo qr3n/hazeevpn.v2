@@ -356,13 +356,6 @@ export default function Home() {
     const [isCopied, setIsCopied] = useState(false);
     const isBusyRef = useRef(false);
 
-    const triggerHaptic = () => {
-        // Проверяем наличие Telegram WebApp API и метода HapticFeedback
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-        }
-    };
-
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
     const isSuccess   = steps !== null && nav.stepIndex === steps.length;
     const currentStep = steps?.[nav.stepIndex] ?? null;
@@ -472,15 +465,16 @@ export default function Home() {
                     <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
                         <Drawer.Trigger asChild>
                             <motion.button
-                                whileTap={{ scale: 0.95 }} transition={TAP_TRANSITION} style={gpuStyle}
-                                className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold"
+                                whileTap={{ scale: 0.95 }}
+                                transition={TAP_TRANSITION}
+                                style={gpuStyle}
+                                className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
                             >
                                 Подключиться
+                                <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none" />
 
-                                <DotLottieReact
-                                    src={"/animations/rocket.json"}
-                                    loop autoplay className="w-8 h-8 pointer-events-none"
-                                />
+                                {/* Анимация блика при клике/активности */}
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-zinc-200/50 to-transparent -translate-x-full group-active:animate-[shimmer_0.4s_ease-in-out]" />
                             </motion.button>
                         </Drawer.Trigger>
 
