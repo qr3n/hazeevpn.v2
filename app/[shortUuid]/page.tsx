@@ -23,12 +23,10 @@ export default async function UserPage({ params }: PageProps) {
     
     const usedGb = Math.round(user.userTraffic.usedTrafficBytes / (1024 * 1024 * 1024));
     
-    // Status color
     const statusColor = user.status === 'ACTIVE' ? '#00eb00' : user.status === 'EXPIRED' ? '#ff0000' : '#71717a';
     const statusText = user.status === 'ACTIVE' ? 'Активна' : user.status === 'EXPIRED' ? 'Истекла' : 'Отключена';
 
-    // Expiration date
-    const expireDate = user.expireAt 
+    const expireDate = user.expireAt
         ? new Date(user.expireAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
         : 'Безлимит';
 
