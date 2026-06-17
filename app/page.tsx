@@ -9,6 +9,7 @@ import Lottie from 'lottie-react';
 import { memo, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTelegram } from '@/lib/telegram-provider';
 import {TransformProperties} from "motion-dom";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -51,15 +52,15 @@ const TAP_TRANSITION:   Transition = { type: 'spring', stiffness: 400, damping: 
 // Форсируем hardware acceleration через явное смещение по оси Z во Framer Motion
 const slideVariants = {
     enter: (dir: number) => ({
-        x: dir > 0 ? '110%' : '-110%',
+        x: dir > 0 ? typeof window !== 'undefined' ? window.innerWidth : 400 : typeof window !== 'undefined' ? -window.innerWidth : -400,
         z: 0
     }),
     exit: (dir: number) => ({
-        x: dir > 0 ? '-110%' : '110%',
+        x: dir > 0 ? typeof window !== 'undefined' ? -window.innerWidth : -400 : typeof window !== 'undefined' ? window.innerWidth : 400,
         z: 0
     }),
     center: {
-        x: '0%',
+        x: 0,
         z: 0
     },
 };
@@ -254,7 +255,12 @@ PlatformSelect.displayName = 'PlatformSelect';
 const SuccessScreen = memo(() => (
     <div className="h-full flex flex-col px-4">
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
-            <Lottie animationData={heart} loop autoplay className="w-32 h-32 pointer-events-none" />
+            <DotLottieReact
+                src="/animations/heart.json"
+                loop
+                autoplay
+                className="w-32 h-32 pointer-events-none"
+            />
             <div className="flex flex-col gap-4">
                 <h2 className="text-4xl font-semibold text-white leading-none">Готово!</h2>
                 <p className="text-zinc-500 text-lg font-medium leading-none">
@@ -413,7 +419,13 @@ export default function Home() {
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
                             {user?.first_name?.toLowerCase() || 'владимир'}!
-                            <Lottie animationData={sticker} loop autoplay className="w-12 h-12 rotate-12 -ml-2 pointer-events-none" />
+
+                           <DotLottieReact
+                               src="/animations/hand.json"
+                               loop
+                               autoplay
+                               className="w-12 h-12 rotate-12 -ml-2 pointer-events-none"
+                           />
                         </span>
                     </h1>
 
@@ -443,7 +455,11 @@ export default function Home() {
                                 className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold"
                             >
                                 Подключиться
-                                <Lottie animationData={rocket} loop autoplay className="w-8 h-8 pointer-events-none" />
+
+                                <DotLottieReact
+                                    src={"/animations/rocket.json"}
+                                    loop autoplay className="w-8 h-8 pointer-events-none"
+                                />
                             </motion.button>
                         </Drawer.Trigger>
 
