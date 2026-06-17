@@ -365,7 +365,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
                     transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                 >
-                    Уже скачано
+                    Уже установлен
                 </motion.button>
             )}
         </div>
