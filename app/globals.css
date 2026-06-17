@@ -145,3 +145,10 @@ body {
     @apply border-border outline-ring/50;
   }
 }
+
+@utility gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

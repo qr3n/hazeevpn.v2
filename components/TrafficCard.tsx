@@ -29,7 +29,7 @@ export const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb, isUn
     }, [percent, isUnlimited]);
 
     return (
-        <div className="relative w-full shadow-2xl shadow-black bg-zinc-900 mt-4 rounded-3xl p-5 xss:pl-3 will-change-transform [transform:translateZ(0)]">
+        <div className="relative w-full shadow-2xl shadow-black bg-zinc-900 mt-4 rounded-3xl p-5 xss:pl-3 gpu">
             <div className="relative flex items-center gap-5">
                 <div className="relative flex-shrink-0 w-[84px] h-[84px]">
                     <svg width="84" height="84" viewBox="0 0 100 100" className="w-full h-full">

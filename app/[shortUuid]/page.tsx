@@ -35,7 +35,7 @@ export default async function UserPage({ params, searchParams }: PageProps) {
         : 'Безлимит';
 
     return (
-        <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none will-change-transform [transform:translateZ(0)]" data-vaul-drawer-wrapper="">
+        <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none gpu" data-vaul-drawer-wrapper="">
             <BackgroundEffects />
 
             <div className="relative z-10 flex h-full flex-col p-4 justify-between">

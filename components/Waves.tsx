@@ -413,7 +413,7 @@ const Waves: React.FC<WavesProps> = ({
                 backgroundColor,
                 ...style
             }}
-            className={`absolute top-0 left-0 w-full h-full overflow-hidden ${className}`}
+            className={`absolute top-0 left-0 w-full h-full overflow-hidden gpu ${className}`}
         >
             <div
                 className="absolute top-0 left-0 bg-[#160000] rounded-full w-[0.5rem] h-[0.5rem]"
@@ -422,7 +422,7 @@ const Waves: React.FC<WavesProps> = ({
                     willChange: 'transform'
                 }}
             />
-            <canvas ref={canvasRef} className="block w-full h-full" />
+            <canvas ref={canvasRef} className="block w-full h-full gpu" />
         </div>
     );
 };

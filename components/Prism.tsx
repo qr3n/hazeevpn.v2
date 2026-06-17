@@ -77,7 +77,11 @@ const Prism: React.FC<PrismProps> = ({
             inset: '0',
             width: '100%',
             height: '100%',
-            display: 'block'
+            display: 'block',
+            willChange: 'transform, opacity',
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden'
         } as Partial<CSSStyleDeclaration>);
         container.appendChild(gl.canvas);
 
@@ -451,7 +455,7 @@ const Prism: React.FC<PrismProps> = ({
         suspendWhenOffscreen
     ]);
 
-    return <div className="w-full h-full relative" ref={containerRef} />;
+    return <div className="w-full h-full relative gpu" ref={containerRef} />;
 };
 
 export default Prism;

@@ -64,9 +64,11 @@ const forceGPU = (transform: TransformProperties, generatedTransform: string) =>
     `${generatedTransform} translateZ(0)`;
 
 const gpuStyle = {
-    willChange: 'transform',
+    willChange: 'transform, opacity',
     WebkitBackfaceVisibility: 'hidden',
     backfaceVisibility: 'hidden',
+    transform: 'translateZ(0)',
+    perspective: '1000px',
 } as const;
 
 // ─── Telegram deep-link redirect fix ────────────────────────────────────────
@@ -240,7 +242,7 @@ const SuccessScreen = memo(() => (
                 src="/animations/heart.json"
                 loop
                 autoplay
-                className="w-32 h-32 pointer-events-none"
+                className="w-32 h-32 pointer-events-none gpu"
             />
             <div className="flex flex-col gap-4">
                 <h2 className="text-4xl font-semibold text-white leading-none">Готово!</h2>
@@ -476,14 +478,14 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                     className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
                 >
                     Подключиться
-                    <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none" />
+                    <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none gpu" />
 
                 </motion.button>
             </Drawer.Trigger>
 
             <Drawer.Portal>
-                <Drawer.Overlay className="fixed inset-0 bg-black/80 z-[4000] will-change-transform [transform:translateZ(0)]" />
-                <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden will-change-transform [transform:translateZ(0)]">
+                <Drawer.Overlay className="fixed inset-0 bg-black/80 z-[4000] gpu" />
+                <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden gpu">
                     <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
                     <Drawer.Title className="sr-only">
                         {nav.platform ? PLATFORMS[nav.platform].label : 'Подключение'}

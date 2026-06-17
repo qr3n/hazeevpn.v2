@@ -3,6 +3,9 @@
 import { motion } from 'framer-motion';
 import Aurora from "@/components/Aurora";
 
+const forceGPU = (_: any, generatedTransform: string) =>
+    `${generatedTransform} translateZ(0)`;
+
 export function BackgroundEffects() {
     return (
         <>
@@ -10,7 +13,8 @@ export function BackgroundEffects() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0"
+                transformTemplate={forceGPU}
+                className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0 gpu"
             >
                 <Aurora
                     colorStops={["#ffdc67","#B497CF","#00eb00"]}
