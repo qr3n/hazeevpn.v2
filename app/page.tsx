@@ -29,7 +29,7 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
         ],
     },
     android: {
-        label: 'Android', desc: 'Смартфоны & ТВ',
+        label: 'Android', desc: 'Смартфоны',
         steps: [
             { title: 'Установите приложение', text: 'Скачайте v2RayNG (или Hiddify) из Google Play или RuStore.',                               action: 'Открыть Google Play' },
             { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
