@@ -473,8 +473,6 @@ export default function Home() {
                                 Подключиться
                                 <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none" />
 
-                                {/* Анимация блика при клике/активности */}
-                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-zinc-200/50 to-transparent -translate-x-full group-active:animate-[shimmer_0.4s_ease-in-out]" />
                             </motion.button>
                         </Drawer.Trigger>
 
