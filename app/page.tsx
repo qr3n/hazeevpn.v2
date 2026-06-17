@@ -471,7 +471,7 @@ export default function Home() {
                     <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
                         <Drawer.Trigger asChild>
                             <motion.button
-                                whileTap={{ scale: 0.95 }}
+                                whileTap={{ scale: 0.95, filter: 'brightness(0.85)' }}
                                 transition={TAP_TRANSITION}
                                 style={gpuStyle}
                                 className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
