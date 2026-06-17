@@ -482,7 +482,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             </Drawer.Trigger>
 
             <Drawer.Portal>
-                <Drawer.Overlay className="fixed backdrop-blur inset-0 bg-black/70 z-[4000] will-change-transform [transform:translateZ(0)]" />
+                <Drawer.Overlay className="fixed inset-0 bg-black/80 z-[4000] will-change-transform [transform:translateZ(0)]" />
                 <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden will-change-transform [transform:translateZ(0)]">
                     <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
                     <Drawer.Title className="sr-only">
