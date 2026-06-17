@@ -24,7 +24,7 @@ export function WelcomeHeader({ username }: WelcomeHeaderProps) {
                     src="/animations/hand.json"
                     loop
                     autoplay
-                    className="w-12 h-12 rotate-12 -ml-2 pointer-events-none gpu"
+                    className="w-12 h-12 rotate-12 -ml-2 -mb-1 pointer-events-none gpu"
                 />
             </span>
         </h1>
