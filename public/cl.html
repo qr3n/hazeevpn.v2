@@ -1,18 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Happ Redirect</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .loader {
+            text-align: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        p { opacity: 0.6; font-size: 14px; letter-spacing: -0.01em; }
+    </style>
+    <script>
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetUrl = urlParams.get('url');
+            if (targetUrl) {
+                window.location.replace(targetUrl);
+                setTimeout(function() { window.close(); }, 5000);
+            }
+        })();
+    </script>
 </head>
 <body>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const targetUrl = urlParams.get('url');
-        if (targetUrl) {
-            window.location.href = targetUrl;
-            // Close the tab after a few seconds if the browser allows
-            setTimeout(() => window.close(), 3000);
-        }
-    </script>
+    <div class="loader">
+        <div class="spinner"></div>
+        <p>Открываем приложение...</p>
+    </div>
 </body>
 </html>
