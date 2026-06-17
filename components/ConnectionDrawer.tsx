@@ -509,7 +509,13 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                 style={gpuStyle}
                             >
                                 {showQr ? (
-                                    <QrScreen url={subscriptionUrl} onNext={() => setShowQr(false)} />
+                                    <QrScreen 
+                                        url={subscriptionUrl} 
+                                        onNext={() => {
+                                            setShowQr(false);
+                                            goNext();
+                                        }} 
+                                    />
                                 ) : nav.platform === null ? (
                                     <PlatformSelect onSelect={selectPlatform} />
                                 ) : isSuccess ? (
