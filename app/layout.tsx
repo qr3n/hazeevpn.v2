@@ -28,6 +28,7 @@ export default function RootLayout({
     >
       <head>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        <link rel="prefetch" href="/cl.html" />
       </head>
       <body className="min-h-full flex flex-col">
           <TelegramProvider>
