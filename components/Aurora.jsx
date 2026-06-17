@@ -126,9 +126,11 @@ export default function Aurora(props) {
   const ctnDom = useRef(null);
 
   useEffect(() => {
-    // Check if any drawer is open by looking for the attribute vaul adds to body or similar
-    // Actually, it's better to pass isPaused prop, but we can detect it via presence of overlay
-    const isPaused = () => document.querySelector('[data-vaul-drawer]') !== null;
+    // Only pause when the drawer is settled (fully open)
+    const isPaused = () => {
+        const drawer = document.querySelector('[data-vaul-drawer]');
+        return drawer && drawer.getAttribute('data-state') === 'open';
+    };
 
     const ctn = ctnDom.current;
     if (!ctn) return;
@@ -137,7 +139,7 @@ export default function Aurora(props) {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: 0.8,
+      dpr: 1.0,
       powerPreference: 'high-performance'
     });
     const gl = renderer.gl;
