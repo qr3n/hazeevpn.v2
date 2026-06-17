@@ -15,7 +15,7 @@ type PlatformKey = 'ios' | 'android' | 'other';
 interface Step       { title: string; text: string; action: string; }
 interface PlatformData { label: string; desc: string; steps: Step[]; }
 
-// ─── Module-level constants (zero allocation per render) ─────────────────────
+// ─── Module-level constants ──────────────────────────────────────────────────
 
 const PLATFORMS: Record<PlatformKey, PlatformData> = {
     ios: {
@@ -42,30 +42,39 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
 };
 
 const PLATFORM_KEYS = Object.keys(PLATFORMS) as PlatformKey[];
-
-// Pre-computed: no Array.from() on every render
 const DOTS = [0, 1, 2, 3] as const;
 
-const SLIDE_TRANSITION: Transition = { type: 'spring', stiffness: 300, damping: 28, mass: 0.7 };
-const TAP_TRANSITION:   Transition = { type: 'spring', stiffness: 400, damping: 20 };
+const SLIDE_TRANSITION: Transition = { type: 'spring', stiffness: 320, damping: 30, mass: 0.8 };
+const TAP_TRANSITION:   Transition = { type: 'spring', stiffness: 400, damping: 22 };
 
-// translate3d(x,0,0) makes the Z-axis explicit → forces GPU compositing layer
+// Форсируем hardware acceleration через явное смещение по оси Z во Framer Motion
 const slideVariants = {
-    enter:  (dir: number) => ({ transform: `translate3d(${dir > 0 ? '110%' : '-110%'}, 0, 0)` }),
-    exit:   (dir: number) => ({ transform: `translate3d(${dir > 0 ? '-110%' : '110%'}, 0, 0)` }),
-    center: { transform: 'translate3d(0, 0, 0)' },
+    enter: (dir: number) => ({
+        x: dir > 0 ? '110%' : '-110%',
+        z: 0
+    }),
+    exit: (dir: number) => ({
+        x: dir > 0 ? '-110%' : '110%',
+        z: 0
+    }),
+    center: {
+        x: '0%',
+        z: 0
+    },
 };
 
-// Shared GPU-promotion style: applied only to actively animated elements
-const gpuLayer = {
-    willChange:              'transform',
-    backfaceVisibility:      'hidden'  as const,
-    WebkitBackfaceVisibility:'hidden'  as const,
+// Функция форсирования 3D-композитинга для Framer Motion на уровне строк
+const forceGPU = ({ x }: { x: string }) => `translate3d(${x}, 0, 0) translateZ(0)`;
+
+const gpuStyle = {
+    willChange: 'transform',
+    WebkitBackfaceVisibility: 'hidden',
+    backfaceVisibility: 'hidden',
 } as const;
 
 const CIRCLE_R = 40;
 
-// ─── Navigation reducer (1 dispatch = 1 re-render) ───────────────────────────
+// ─── Navigation reducer ──────────────────────────────────────────────────────
 
 type NavState  = { platform: PlatformKey | null; stepIndex: number; direction: number; };
 type NavAction =
@@ -88,7 +97,7 @@ function navReducer(s: NavState, a: NavAction): NavState {
     }
 }
 
-// ─── Icons — module-level memo, never re-created ─────────────────────────────
+// ─── Icons ───────────────────────────────────────────────────────────────────
 
 const IosIcon = memo(() => (
     <svg viewBox="0 0 814 1000" className="w-6 h-6 fill-white opacity-90">
@@ -118,8 +127,6 @@ const PLATFORM_ICONS: Record<PlatformKey, React.ComponentType> = {
     ios: IosIcon, android: AndroidIcon, other: GlobeIcon,
 };
 
-// ─── Chevron ─────────────────────────────────────────────────────────────────
-
 const Chevron = memo(({ dir = 'right', className = '' }: { dir?: 'left' | 'right'; className?: string }) => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d={dir === 'left' ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'} />
@@ -128,9 +135,6 @@ const Chevron = memo(({ dir = 'right', className = '' }: { dir?: 'left' | 'right
 Chevron.displayName = 'Chevron';
 
 // ─── TrafficCard ─────────────────────────────────────────────────────────────
-// KEY OPTIMISATION: counter uses useRef + direct DOM mutation instead of
-// animatedPercent state → removes ~50 re-renders during the 800ms animation.
-// The memo() + stable numeric props mean this subtree never re-renders again.
 
 interface TrafficCardProps { totalGb: number; usedGb: number; incomingGb: number; outgoingGb: number; }
 
@@ -144,7 +148,6 @@ const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb }: TrafficCa
         const ctrl = animate(0, percent, {
             duration: 0.8,
             onUpdate: (v) => {
-                // Bypass React reconciler entirely — direct DOM write
                 if (counterRef.current) counterRef.current.textContent = `${Math.round(v)}%`;
             },
         });
@@ -152,7 +155,7 @@ const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb }: TrafficCa
     }, [percent]);
 
     return (
-        <div className="relative w-full shadow-2xl shadow-black bg-zinc-900 mt-4 rounded-3xl p-5 xss:pl-3">
+        <div className="relative w-full shadow-2xl shadow-black bg-zinc-900 mt-4 rounded-3xl p-5 xss:pl-3 will-change-transform [transform:translateZ(0)]">
             <div className="relative flex items-center gap-5">
                 <div className="relative flex-shrink-0 w-[84px] h-[84px]">
                     <svg width="84" height="84" viewBox="0 0 100 100" className="w-full h-full">
@@ -173,7 +176,6 @@ const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb }: TrafficCa
                         />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        {/* Empty on mount; filled imperatively by the effect above */}
                         <span ref={counterRef} className="text-white text-sm font-bold" />
                     </div>
                 </div>
@@ -207,7 +209,6 @@ interface PlatformButtonProps { platformKey: PlatformKey; onSelect: (k: Platform
 const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => {
     const { label, desc } = PLATFORMS[platformKey];
     const Icon = PLATFORM_ICONS[platformKey];
-    // Stable callback per button — doesn't bust memo when parent re-renders
     const handleClick = useCallback(() => onSelect(platformKey), [platformKey, onSelect]);
 
     return (
@@ -215,8 +216,8 @@ const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => 
             onClick={handleClick}
             whileTap={{ scale: 0.97 }}
             transition={TAP_TRANSITION}
-            style={gpuLayer}
-            className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px]${platformKey === 'other' ? ' col-span-2' : ''}`}
+            style={gpuStyle}
+            className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${platformKey === 'other' ? 'col-span-2' : ''}`}
         >
             <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4">
                 <Icon />
@@ -234,8 +235,6 @@ const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => 
 PlatformButton.displayName = 'PlatformButton';
 
 // ─── PlatformSelect ──────────────────────────────────────────────────────────
-// `onSelect` is stable (useCallback with empty deps) → this component
-// never re-renders after mount regardless of drawer state changes.
 
 const PlatformSelect = memo(({ onSelect }: { onSelect: (k: PlatformKey) => void }) => (
     <div className="h-full flex flex-col px-4 pt-6">
@@ -264,8 +263,8 @@ const SuccessScreen = memo(() => (
         <div className="h-[140px] flex flex-col justify-end pb-4">
             <Drawer.Close asChild>
                 <motion.button
-                    whileTap={{ scale: 0.97 }} transition={TAP_TRANSITION} style={gpuLayer}
-                    className="w-full relative rounded-3xl py-4 !bg-white text-xl text-black font-semibold"
+                    whileTap={{ scale: 0.97 }} transition={TAP_TRANSITION} style={gpuStyle}
+                    className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                 >
                     Закрыть
                 </motion.button>
@@ -298,7 +297,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
                 whileTap={{ scale: 0.97 }}
                 animate={{ backgroundColor: isCopied ? '#d1d5db' : '#ffffff', color: '#000000' }}
                 transition={{ duration: 0.1 }}
-                style={gpuLayer}
+                style={gpuStyle}
                 className="w-full rounded-3xl py-4 text-xl font-semibold flex items-center justify-center gap-2 overflow-hidden"
             >
                 <AnimatePresence mode="wait">
@@ -329,7 +328,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
             {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
                 <motion.button
                     onClick={onSkip} whileTap={{ scale: 0.97 }}
-                    transition={TAP_TRANSITION} style={gpuLayer}
+                    transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                 >
                     Уже скачано
@@ -344,15 +343,10 @@ StepScreen.displayName = 'StepScreen';
 
 export default function Home() {
     const { user } = useTelegram();
-
-    // Single dispatch instead of 3× setState — one re-render per nav action
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
-
-    // Only isCopied triggers re-renders; isBusy is a guard with no visual effect
     const [isCopied, setIsCopied] = useState(false);
     const isBusyRef = useRef(false);
 
-    // O(1) derivations — no useMemo overhead needed for these
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
     const isSuccess   = steps !== null && nav.stepIndex === steps.length;
     const currentStep = steps?.[nav.stepIndex] ?? null;
@@ -361,7 +355,6 @@ export default function Home() {
         ? 'select'
         : (isSuccess ? 'success' : `${nav.platform}-${nav.stepIndex}`);
 
-    // Prevents spring-stacking from rapid taps without triggering re-renders
     const withGuard = useCallback((fn: () => void) => {
         if (isBusyRef.current) return;
         isBusyRef.current = true;
@@ -369,7 +362,6 @@ export default function Home() {
         setTimeout(() => { isBusyRef.current = false; }, 400);
     }, []);
 
-    // All three are stable after mount → PlatformSelect never re-renders
     const selectPlatform = useCallback(
         (key: PlatformKey) => withGuard(() => dispatch({ type: 'SELECT', platform: key })),
         [withGuard]
@@ -383,7 +375,6 @@ export default function Home() {
         [withGuard]
     );
 
-    // Re-created when currentStep changes (nav changed) — acceptable
     const handleAction = useCallback(() => {
         if (isBusyRef.current) return;
         if (currentStep?.action === 'Скопировать ссылку') {
@@ -409,7 +400,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="transform-gpu will-change-transform relative h-[100dvh] w-full bg-black overflow-hidden select-none" data-vaul-drawer-wrapper="">
+        <div className="relative h-[100dvh] w-full bg-black overflow-hidden select-none will-change-transform [transform:translateZ(0)]" data-vaul-drawer-wrapper="">
             <div className="absolute w-[200%] h-[100dvh] bg-gradient-to-br from-black opacity-90 to-transparent" />
 
             <div className="relative z-10 flex h-full flex-col p-4 justify-between">
@@ -438,17 +429,16 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Frozen after mount — never re-renders */}
                     <TrafficCard totalGb={500} usedGb={300} incomingGb={187} outgoingGb={113} />
                 </div>
 
                 {/* ── Drawer ────────────────────────────────────────── */}
-                <div className="relative z-10 transform-gpu will-change-transform">
+                <div className="relative z-10 will-change-transform [transform:translateZ(0)]">
                     <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
                         <Drawer.Trigger asChild>
                             <motion.button
-                                whileTap={{ scale: 0.95 }} transition={TAP_TRANSITION} style={gpuLayer}
-                                className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 !bg-white text-2xl text-black font-semibold"
+                                whileTap={{ scale: 0.95 }} transition={TAP_TRANSITION} style={gpuStyle}
+                                className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold"
                             >
                                 Подключиться
                                 <Lottie animationData={rocket} loop autoplay className="w-8 h-8 pointer-events-none" />
@@ -456,18 +446,18 @@ export default function Home() {
                         </Drawer.Trigger>
 
                         <Drawer.Portal>
-                            <Drawer.Overlay className="transform-gpu will-change-transform fixed inset-0 bg-black/70 z-[4000]" />
-                            <Drawer.Content className="transform-gpu will-change-transform z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden">
+                            <Drawer.Overlay className="fixed inset-0 bg-black/70 z-[4000] will-change-transform [transform:translateZ(0)]" />
+                            <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden will-change-transform [transform:translateZ(0)]">
                                 <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
                                 <Drawer.Title className="sr-only">
                                     {nav.platform ? PLATFORMS[nav.platform].label : 'Подключение'}
                                 </Drawer.Title>
 
-                                {/* Dot progress */}
+                                {/* Progress */}
                                 <div className="relative flex items-center justify-center flex-shrink-0 pt-2">
                                     <motion.button
                                         onClick={goBack} aria-label="Назад"
-                                        whileTap={{ scale: 0.9 }} transition={TAP_TRANSITION} style={gpuLayer}
+                                        whileTap={{ scale: 0.9 }} transition={TAP_TRANSITION} style={gpuStyle}
                                         className={`absolute left-0 p-2 rounded-full bg-zinc-800 text-white transition-opacity duration-200 ${nav.platform === null ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                                     >
                                         <Chevron dir="left" />
@@ -479,17 +469,18 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                {/* Slide container — perspective creates 3D context for children */}
-                                <div className="relative flex-1 overflow-hidden" style={{ perspective: 1000 }}>
+                                {/* Slide container */}
+                                <div className="relative flex-1 overflow-hidden" style={{ perspective: 1000, transformStyle: 'preserve-3d' }}>
                                     <AnimatePresence initial={false} custom={nav.direction}>
                                         <motion.div
                                             key={pageKey}
                                             custom={nav.direction}
                                             variants={slideVariants}
+                                            transformTemplate={forceGPU}
                                             initial="enter" animate="center" exit="exit"
                                             transition={SLIDE_TRANSITION}
                                             className="absolute inset-0"
-                                            style={gpuLayer}
+                                            style={gpuStyle}
                                         >
                                             {nav.platform === null ? (
                                                 <PlatformSelect onSelect={selectPlatform} />
