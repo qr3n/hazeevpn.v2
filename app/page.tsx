@@ -9,7 +9,7 @@ import Lottie from 'lottie-react';
 import { memo, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTelegram } from '@/lib/telegram-provider';
 import {TransformProperties} from "motion-dom";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react/webgpu';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react/webgl';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
