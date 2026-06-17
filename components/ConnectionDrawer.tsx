@@ -216,7 +216,7 @@ PlatformSelect.displayName = 'PlatformSelect';
 // ─── QrScreen ──────────────────────────────────────────────────────────────
 
 const QrScreen = memo(({ url, onNext }: { url: string; onNext: () => void }) => (
-    <div className="h-full flex flex-col px-4">
+    <div className="h-full flex flex-col px-4 pt-4">
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-10">
             <div className="bg-white p-6 rounded-4xl shadow-2xl shadow-white/5 gpu">
                 <QRCodeSVG
