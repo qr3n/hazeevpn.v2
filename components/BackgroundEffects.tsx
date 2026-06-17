@@ -1,7 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Aurora from "@/components/Aurora";
+import dynamic from 'next/dynamic';
+
+const Aurora = dynamic(() => import("@/components/Aurora"), { ssr: false });
 
 const forceGPU = (_: any, generatedTransform: string) =>
     `${generatedTransform} translateZ(0)`;
