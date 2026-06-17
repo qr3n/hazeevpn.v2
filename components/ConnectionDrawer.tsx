@@ -325,14 +325,14 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         }
 
         if (action === 'Открыть App Store') {
-            window.open('https://apps.apple.com/app/v2raytun/id6446786663', '_blank');
+            window.open('https://apps.apple.com/app/v2raytun/id6476628951', '_blank');
         } else if (action === 'Открыть Google Play') {
-            window.open('https://play.google.com/store/apps/details?id=com.v2ray.ang', '_blank');
+            window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
         } else if (action === 'Добавить подписку') {
             // Use specific protocols for apps
             const deepLink = nav.platform === 'ios'
-                ? `v2raytun://install-config?url=${encodeURIComponent(subscriptionUrl)}`
-                : `v2rayng://install-config?url=${encodeURIComponent(subscriptionUrl)}`;
+                ? `happ://add/${subscriptionUrl}`
+                : `happ://add/${subscriptionUrl}`;
             
             // For 'other' or as fallback
             const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
