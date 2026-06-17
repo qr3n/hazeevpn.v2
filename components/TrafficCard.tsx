@@ -8,8 +8,9 @@ interface TrafficCardProps { totalGb: number; usedGb: number; incomingGb: number
 const CIRCLE_R = 40;
 
 export const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb, isUnlimited }: TrafficCardProps) => {
-    const percent    = isUnlimited ? 0 : Math.round((usedGb / totalGb) * 100);
-    const counterRef = useRef<HTMLSpanElement>(null);
+    const remainingGb = Math.max(0, totalGb - usedGb);
+    const percent     = isUnlimited ? 100 : Math.round((remainingGb / totalGb) * 100);
+    const counterRef  = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         if (!counterRef.current) return;
@@ -17,8 +18,8 @@ export const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb, isUn
             counterRef.current.textContent = '∞';
             return;
         }
-        counterRef.current.textContent = '0%';
-        const ctrl = animate(0, percent, {
+        counterRef.current.textContent = '100%';
+        const ctrl = animate(100, percent, {
             duration: 0.8,
             onUpdate: (v) => {
                 if (counterRef.current) counterRef.current.textContent = `${Math.round(v)}%`;
@@ -43,7 +44,7 @@ export const TrafficCard = memo(({ totalGb, usedGb, incomingGb, outgoingGb, isUn
                             cx="50" cy="50" r={CIRCLE_R}
                             fill="none" stroke="url(#trafficGrad)" strokeWidth="9"
                             strokeLinecap="round" transform="rotate(-90 50 50)"
-                            initial={{ pathLength: 0 }}
+                            initial={{ pathLength: 1 }}
                             animate={{ pathLength: percent / 100 }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}
                         />

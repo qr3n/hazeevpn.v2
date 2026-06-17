@@ -10,7 +10,9 @@ interface WelcomeHeaderProps {
 export function WelcomeHeader({ username }: WelcomeHeaderProps) {
     const { user } = useTelegram();
 
-    const displayName = (user?.first_name || user?.username || username || 'владимир').toLowerCase();
+    // Prioritize the server-provided username to avoid flickering.
+    // Only fall back to Telegram SDK data if username is not provided.
+    const displayName = (username || user?.first_name || user?.username || 'владимир').toLowerCase();
 
     return (
         <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">

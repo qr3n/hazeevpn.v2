@@ -7,15 +7,19 @@ import { notFound } from "next/navigation";
 
 interface PageProps {
     params: Promise<{ shortUuid: string }>;
+    searchParams: Promise<{ name?: string }>;
 }
 
-export default async function UserPage({ params }: PageProps) {
+export default async function UserPage({ params, searchParams }: PageProps) {
     const { shortUuid } = await params;
+    const { name: urlName } = await searchParams;
     const user = await getUserByShortUuid(shortUuid);
 
     if (!user) {
         notFound();
     }
+
+    const displayName = urlName || user.username;
 
     const totalGb = user.trafficLimitBytes > 0 
         ? Math.round(user.trafficLimitBytes / (1024 * 1024 * 1024)) 
@@ -37,7 +41,7 @@ export default async function UserPage({ params }: PageProps) {
             <div className="relative z-10 flex h-full flex-col p-4 justify-between">
                 {/* ── Header ────────────────────────────────────────── */}
                 <div className="pt-12 relative">
-                    <WelcomeHeader username={user.username} />
+                    <WelcomeHeader username={displayName} />
 
                     <div className="w-full h-[84px] mt-8 rounded-3xl flex gap-3">
                         <div className="relative shadow-2xl shadow-black bg-zinc-800 rounded-2xl w-full h-full p-4 flex flex-col justify-between">
