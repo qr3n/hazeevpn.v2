@@ -332,6 +332,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             alert(subscriptionUrl)
             // happ://add/ работает на iOS, Android и десктопе (Windows/macOS)
             const deepLink = `happ://add/${subscriptionUrl}`;
+            alert(deepLink)
 
             // Используем <a> вместо window.location.href — страница не "уходит"
             // даже если приложение не установлено
