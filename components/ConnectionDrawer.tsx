@@ -347,8 +347,8 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         } else if (action === 'Добавить подписку') {
             // Используем протоколы приложений (happ:// или v2raytun://)
             const deepLink = nav.platform === 'ios'
-                ? `v2raytun://install-config?url=${encodeURIComponent(subscriptionUrl)}`
-                : `v2rayng://install-config?url=${encodeURIComponent(subscriptionUrl)}`;
+                ? `happ://add/${subscriptionUrl}`
+                : `happ://add/${subscriptionUrl}`;
             
             // Если Happ поддерживает свою универсальную схему:
             // const deepLink = `happ://add/${subscriptionUrl}`;
