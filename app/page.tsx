@@ -11,6 +11,9 @@ import { useTelegram } from '@/lib/telegram-provider';
 import {TransformProperties} from "motion-dom";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Aurora from "@/components/Aurora";
+import {Ripple} from "m3-ripple";
+import 'm3-ripple/ripple.css'
+
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -223,6 +226,7 @@ const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => 
             style={gpuStyle}
             className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${platformKey === 'other' ? 'col-span-2' : ''}`}
         >
+            <Ripple/>
             <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center mb-4">
                 <Icon />
             </div>
@@ -275,6 +279,7 @@ const SuccessScreen = memo(() => (
                     whileTap={{ scale: 0.97 }} transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                 >
+                    <Ripple/>
                     Закрыть
                 </motion.button>
             </Drawer.Close>
@@ -307,8 +312,9 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
                 animate={{ backgroundColor: isCopied ? '#d1d5db' : '#ffffff', color: '#000000' }}
                 transition={{ duration: 0.1 }}
                 style={gpuStyle}
-                className="w-full rounded-3xl py-4 text-xl font-semibold flex items-center justify-center gap-2 overflow-hidden"
+                className="w-full relative rounded-3xl py-4 text-xl font-semibold flex items-center justify-center gap-2 overflow-hidden"
             >
+                <Ripple/>
                 <AnimatePresence mode="wait">
                     {isCopied ? (
                         <motion.div
@@ -338,8 +344,9 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
                 <motion.button
                     onClick={onSkip} whileTap={{ scale: 0.97 }}
                     transition={TAP_TRANSITION} style={gpuStyle}
-                    className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
+                    className="w-full relative rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                 >
+                    <Ripple/>
                     Уже скачано
                 </motion.button>
             )}
@@ -432,7 +439,7 @@ export default function Home() {
                     <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
-                            {(user?.first_name || user?.username || 'владимир').toLowerCase()}!
+                            {(user?.first_name || user?.username || 'мы скучали')}!
 
                            <DotLottieReact
                                src="/animations/hand.json"
@@ -470,6 +477,7 @@ export default function Home() {
                                 style={gpuStyle}
                                 className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
                             >
+                                <Ripple/>
                                 Подключиться
                                 <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none" />
 
@@ -491,6 +499,7 @@ export default function Home() {
                                         whileTap={{ scale: 0.9 }} transition={TAP_TRANSITION} style={gpuStyle}
                                         className={`absolute left-0 p-2 rounded-full bg-zinc-800 text-white transition-opacity duration-200 ${nav.platform === null ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                                     >
+                                        <Ripple/>
                                         <Chevron dir="left" />
                                     </motion.button>
                                     <div className="flex gap-2">
