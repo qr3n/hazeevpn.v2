@@ -42,20 +42,23 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
 const PLATFORM_KEYS = Object.keys(PLATFORMS) as PlatformKey[];
 const DOTS = [0, 1, 2, 3] as const;
 
-const SLIDE_TRANSITION: Transition = { type: 'spring', stiffness: 320, damping: 30, mass: 0.8 };
+const SLIDE_TRANSITION: Transition = { duration: 0.35, ease: [0.32, 0.72, 0, 1] };
 const TAP_TRANSITION:   Transition = { type: 'spring', stiffness: 400, damping: 22 };
 
 const slideVariants = {
     enter: (dir: number) => ({
-        x: dir > 0 ? typeof window !== 'undefined' ? window.innerWidth : 400 : typeof window !== 'undefined' ? -window.innerWidth : -400,
+        x: dir > 0 ? 300 : -300,
+        opacity: 0,
         z: 0
     }),
     exit: (dir: number) => ({
-        x: dir > 0 ? typeof window !== 'undefined' ? -window.innerWidth : -400 : typeof window !== 'undefined' ? window.innerWidth : 400,
+        x: dir > 0 ? -300 : 300,
+        opacity: 0,
         z: 0
     }),
     center: {
         x: 0,
+        opacity: 1,
         z: 0
     },
 };
@@ -469,7 +472,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
     }, []);
 
     return (
-        <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
+        <Drawer.Root onOpenChange={handleOpenChange}>
             <Drawer.Trigger asChild>
                 <motion.button
                     whileTap={{ scale: 0.95, filter: 'brightness(0.85)' }}

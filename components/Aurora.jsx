@@ -126,13 +126,19 @@ export default function Aurora(props) {
   const ctnDom = useRef(null);
 
   useEffect(() => {
+    // Check if any drawer is open by looking for the attribute vaul adds to body or similar
+    // Actually, it's better to pass isPaused prop, but we can detect it via presence of overlay
+    const isPaused = () => document.querySelector('[data-vaul-drawer]') !== null;
+
     const ctn = ctnDom.current;
     if (!ctn) return;
 
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true
+      antialias: false,
+      dpr: 0.8,
+      powerPreference: 'high-performance'
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -181,6 +187,11 @@ export default function Aurora(props) {
     let animateId = 0;
     const update = t => {
       animateId = requestAnimationFrame(update);
+      
+      // Optimization: skip rendering if drawer is open (unless we want it blurred behind)
+      // But since we have a dark overlay, we can skip it to save battery/FPS
+      if (isPaused()) return;
+
       const { time = t * 0.01, speed = 1.0 } = propsRef.current;
       program.uniforms.uTime.value = time * speed * 0.1;
       program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
