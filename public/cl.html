@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUrl = urlParams.get('url');
+        if (targetUrl) {
+            window.location.href = targetUrl;
+            // Close the tab after a few seconds if the browser allows
+            setTimeout(() => window.close(), 3000);
+        }
+    </script>
+</body>
+</html>

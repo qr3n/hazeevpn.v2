@@ -69,25 +69,19 @@ const gpuStyle = {
 } as const;
 
 // ─── Telegram deep-link redirect fix ────────────────────────────────────────
-// Telegram Desktop на Windows не передаёт системе custom-scheme ссылки
-// (happ://, v2box:// и т.п.), если их открывать прямо из mini app. Это
-// известный обход: https://github.com/maposia/redirect-page — он шлёт
-// пользователя на промежуточную страницу, а та уже редиректит на сам
-// deeplink через настоящий клик по <a target="_blank">, который Windows
-// корректно передаёт зарегистрированному обработчику схемы.
-// Для прода стоит захостить свою копию (README поддерживает self-host —
-// Vercel/свой сервер/GitHub Pages); тут используется публичный инстанс
-// автора как дроп-ин дефолт.
-const REDIRECT_PAGE_URL = 'https://maposia.github.io/redirect-page/';
+// WebView в Telegram блокирует любые протоколы, отличные от http и https.
+// Чтобы обойти это, используем локальный редиректор cl.html, который
+// открывается во внешнем браузере через Telegram.WebApp.openLink.
 
 function withRedirectPage(deepLink: string): string {
-    return `${REDIRECT_PAGE_URL}?redirect_to=${encodeURIComponent(deepLink)}`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return `${origin}/cl.html?url=${encodeURIComponent(deepLink)}`;
 }
 
-type TelegramWebApp = { openLink?: (url: string) => void };
+type TelegramWebApp = { openLink?: (url: string, options?: { try_browser?: boolean }) => void };
 
 function getTelegramWebApp(): TelegramWebApp | undefined {
-    return (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
+    return (window as any).Telegram?.WebApp;
 }
 
 // ─── Navigation reducer ──────────────────────────────────────────────────────
@@ -351,30 +345,25 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
         } else if (action === 'Добавить подписку') {
-            // happ://add/ работает на iOS, Android и десктопе (Windows/macOS),
-            // но Telegram Desktop на Windows не передаёт такие ссылки системе,
-            // если открывать их прямо из mini app — поэтому идём через
-            // redirect-page (см. константы в начале файла).
-            const deepLink = `happ://add/${subscriptionUrl}`;
-            const redirectUrl = withRedirectPage(deepLink);
+            // Используем протоколы приложений (happ:// или v2raytun://)
+            const deepLink = nav.platform === 'ios'
+                ? `v2raytun://install-config?url=${encodeURIComponent(subscriptionUrl)}`
+                : `v2rayng://install-config?url=${encodeURIComponent(subscriptionUrl)}`;
+            
+            // Если Happ поддерживает свою универсальную схему:
+            // const deepLink = `happ://add/${subscriptionUrl}`;
+
+            const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
+            const redirectUrl = withRedirectPage(finalLink);
 
             const tg = getTelegramWebApp();
-            if (tg?.openLink) {
-                // Официальный метод Telegram Mini Apps SDK — открывает ссылку
-                // во внешнем браузере, самый надёжный вариант, если SDK уже
-                // подключён где-то в layout.
-                tg.openLink(redirectUrl);
+            if (tg?.openLink && !finalLink.startsWith('http')) {
+                // Открываем локальный редиректор во внешнем браузере
+                tg.openLink(redirectUrl, { try_browser: true });
+            } else if (tg?.openLink && finalLink.startsWith('http')) {
+                tg.openLink(finalLink, { try_browser: true });
             } else {
-                // Фоллбэк: реальный клик по <a target="_blank">. Важно именно
-                // target="_blank" — без него Windows не передаёт управление
-                // зарегистрированному обработчику custom-scheme.
-                const a = document.createElement('a');
-                a.href = redirectUrl;
-                a.target = '_blank';
-                a.rel = 'noopener';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                window.location.href = finalLink;
             }
         }
 
