@@ -18,14 +18,14 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
     ios: {
         label: 'iOS', desc: 'iPhone & iPad',
         steps: [
-            { title: 'Установите Happ', text: 'Скачайте v2RayTun из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
+            { title: 'Установите Happ', text: 'Скачайте приложение из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
             { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
         ],
     },
     android: {
         label: 'Android', desc: 'Смартфоны',
         steps: [
-            { title: 'Установите Happ', text: 'Скачайте v2RayNG из Google Play или RuStore.',                               action: 'Открыть Google Play' },
+            { title: 'Установите Happ', text: 'Скачайте приложение из Google Play или RuStore.',                               action: 'Открыть Google Play' },
             { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
         ],
     },
@@ -329,19 +329,20 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
         } else if (action === 'Добавить подписку') {
-            // Use specific protocols for apps
-            const deepLink = nav.platform === 'ios'
-                ? `happ://add/${subscriptionUrl}`
-                : `happ://add/${subscriptionUrl}`;
-            
-            // For 'other' or as fallback
-            const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
-            
-            window.location.href = finalLink;
+            // happ://add/ работает на iOS, Android и десктопе (Windows/macOS)
+            const deepLink = `happ://add/${subscriptionUrl}`;
+
+            // Используем <a> вместо window.location.href — страница не "уходит"
+            // даже если приложение не установлено
+            const a = document.createElement('a');
+            a.href = deepLink;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         withGuard(() => dispatch({ type: 'NEXT' }));
-    }, [currentStep?.action, subscriptionUrl, nav.platform, withGuard]);
+    }, [currentStep?.action, subscriptionUrl, withGuard]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         if (!open) setTimeout(() => {
