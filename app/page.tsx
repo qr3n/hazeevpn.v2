@@ -12,7 +12,6 @@ import {TransformProperties} from "motion-dom";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Aurora from "@/components/Aurora";
 import {Ripple} from "m3-ripple";
-import 'm3-ripple/ripple.css'
 
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -221,7 +220,7 @@ const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => 
     return (
         <motion.button
             onClick={handleClick}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
             transition={TAP_TRANSITION}
             style={gpuStyle}
             className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${platformKey === 'other' ? 'col-span-2' : ''}`}
@@ -276,7 +275,7 @@ const SuccessScreen = memo(() => (
         <div className="h-[140px] flex flex-col justify-end pb-4">
             <Drawer.Close asChild>
                 <motion.button
-                    whileTap={{ scale: 0.97 }} transition={TAP_TRANSITION} style={gpuStyle}
+                    whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }} transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                 >
 
@@ -308,7 +307,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
         <div className="h-[140px] flex flex-col justify-end gap-2 pb-4">
             <motion.button
                 onClick={onAction}
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
                 animate={{ backgroundColor: isCopied ? '#d1d5db' : '#ffffff', color: '#000000' }}
                 transition={{ duration: 0.1 }}
                 style={gpuStyle}
@@ -342,7 +341,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
 
             {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
                 <motion.button
-                    onClick={onSkip} whileTap={{ scale: 0.97 }}
+                    onClick={onSkip} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
                     transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full relative rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                 >
