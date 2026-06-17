@@ -92,6 +92,7 @@ type NavAction =
     | { type: 'SELECT'; platform: PlatformKey }
     | { type: 'NEXT' }
     | { type: 'BACK' }
+    | { type: 'SET_STEP'; index: number }
     | { type: 'RESET' };
 
 const NAV_INITIAL: NavState = { platform: null, stepIndex: 0, direction: 1 };
@@ -104,6 +105,8 @@ function navReducer(s: NavState, a: NavAction): NavState {
             return s.stepIndex === 0
                 ? { platform: null, stepIndex: 0, direction: -1 }
                 : { ...s, stepIndex: s.stepIndex - 1, direction: -1 };
+        case 'SET_STEP':
+            return { ...s, stepIndex: a.index, direction: a.index > s.stepIndex ? 1 : -1 };
         case 'RESET':  return NAV_INITIAL;
     }
 }
@@ -359,6 +362,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
     const [showQr, setShowQr] = useState(false);
+    const [qrOriginIndex, setQrOriginIndex] = useState<number | null>(null);
     const isBusyRef = useRef(false);
 
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
@@ -390,11 +394,17 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         () => withGuard(() => {
             if (showQr) {
                 setShowQr(false);
+                setQrOriginIndex(null);
+            } else if (isSuccess && qrOriginIndex !== null) {
+                // Если мы на экране успеха и пришли туда из QR, возвращаемся в QR на тот же шаг
+                dispatch({ type: 'SET_STEP', index: qrOriginIndex });
+                setShowQr(true);
             } else {
                 dispatch({ type: 'BACK' });
+                setQrOriginIndex(null);
             }
         }),
-        [withGuard, showQr]
+        [withGuard, showQr, isSuccess, qrOriginIndex]
     );
 
     const handleAction = useCallback(() => {
@@ -472,7 +482,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             </Drawer.Trigger>
 
             <Drawer.Portal>
-                <Drawer.Overlay className="fixed inset-0 bg-black/70 z-[4000] will-change-transform [transform:translateZ(0)]" />
+                <Drawer.Overlay className="fixed backdrop-blur-xl inset-0 bg-black/70 z-[4000] will-change-transform [transform:translateZ(0)]" />
                 <Drawer.Content className="z-[5000] rounded-t-4xl flex flex-col gap-4 p-4 bg-zinc-950 h-[80dvh] fixed bottom-0 left-0 right-0 outline-none overflow-hidden will-change-transform [transform:translateZ(0)]">
                     <div className="mx-auto w-12 h-1.5 rounded-full bg-zinc-600 flex-shrink-0 mt-1" />
                     <Drawer.Title className="sr-only">
@@ -513,13 +523,9 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         url={subscriptionUrl} 
                                         onNext={() => {
                                             setShowQr(false);
-                                            // Прыгаем сразу на экран успеха (индекс за пределами массива шагов)
+                                            // Прыгаем сразу на экран успеха
                                             if (steps) {
-                                                withGuard(() => {
-                                                    for (let i = nav.stepIndex; i < steps.length; i++) {
-                                                        dispatch({ type: 'NEXT' });
-                                                    }
-                                                });
+                                                dispatch({ type: 'SET_STEP', index: steps.length });
                                             }
                                         }} 
                                     />
@@ -535,7 +541,10 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         isCopied={isCopied}
                                         onAction={handleAction}
                                         onSkip={goNext}
-                                        onShowQr={() => setShowQr(true)}
+                                        onShowQr={() => {
+                                            setQrOriginIndex(nav.stepIndex);
+                                            setShowQr(true);
+                                        }}
                                     />
                                 )}
                             </motion.div>
