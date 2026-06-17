@@ -351,7 +351,7 @@ StepScreen.displayName = 'StepScreen';
 // ─── Home ────────────────────────────────────────────────────────────────────
 
 export default function Home() {
-    const { user, tg } = useTelegram();
+    const { user } = useTelegram();
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
     const isBusyRef = useRef(false);
