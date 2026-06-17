@@ -351,10 +351,17 @@ StepScreen.displayName = 'StepScreen';
 // ─── Home ────────────────────────────────────────────────────────────────────
 
 export default function Home() {
-    const { user } = useTelegram();
+    const { user, tg } = useTelegram();
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
     const isBusyRef = useRef(false);
+
+    const triggerHaptic = () => {
+        // Проверяем наличие Telegram WebApp API и метода HapticFeedback
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        }
+    };
 
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
     const isSuccess   = steps !== null && nav.stepIndex === steps.length;
