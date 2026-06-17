@@ -24,6 +24,7 @@ export default function RootLayout({
     <html
       lang="ru"
       className={`${montserrat.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
