@@ -5,6 +5,7 @@ import { Drawer } from 'vaul';
 import { memo, useCallback, useReducer, useRef, useState } from 'react';
 import { TransformProperties } from "motion-dom";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -33,7 +34,7 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
         label: 'Другое', desc: 'PC & macOS',
         steps: [
             { title: 'Скопируйте ссылку',    text: 'Эта ссылка-подписка подходит для Windows, macOS и Linux.',                                  action: 'Скопировать ссылку' },
-            { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
+            { title: 'Импортируйте профиль',  text: 'Используйте скопированную ссылку в вашем VPN-клиенте на ПК или Mac.',          action: 'Я импортировал' },
         ],
     },
 };
@@ -189,6 +190,45 @@ const PlatformSelect = memo(({ onSelect }: { onSelect: (k: PlatformKey) => void 
 ));
 PlatformSelect.displayName = 'PlatformSelect';
 
+// ─── QrScreen ──────────────────────────────────────────────────────────────
+
+const QrScreen = memo(({ url, onBack }: { url: string; onBack: () => void }) => (
+    <div className="h-full flex flex-col px-4">
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-8">
+            <h2 className="text-4xl font-semibold text-white leading-none">QR-код</h2>
+            <div className="bg-white p-6 rounded-4xl">
+                <QRCodeSVG
+                    value={url}
+                    size={200}
+                    level="H"
+                    includeMargin={false}
+                    imageSettings={{
+                        src: "/favicon.ico",
+                        x: undefined,
+                        y: undefined,
+                        height: 40,
+                        width: 40,
+                        excavate: true,
+                    }}
+                />
+            </div>
+            <p className="text-zinc-500 text-lg font-medium leading-none max-w-[280px]">
+                Отсканируйте этот код в приложении для импорта профиля.
+            </p>
+        </div>
+        <div className="h-[140px] flex flex-col justify-end pb-4">
+            <motion.button
+                onClick={onBack} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
+                transition={TAP_TRANSITION} style={gpuStyle}
+                className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
+            >
+                Назад
+            </motion.button>
+        </div>
+    </div>
+));
+QrScreen.displayName = 'QrScreen';
+
 // ─── SuccessScreen ───────────────────────────────────────────────────────────
 
 const SuccessScreen = memo(() => (
@@ -230,9 +270,10 @@ interface StepScreenProps {
     isCopied: boolean;
     onAction: () => void;
     onSkip: () => void;
+    onShowQr?: () => void;
 }
 
-const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction, onSkip }: StepScreenProps) => (
+const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction, onSkip, onShowQr }: StepScreenProps) => (
     <div className="h-full flex flex-col px-4">
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">
             <h2 className="text-4xl font-semibold text-white leading-none">{currentStep.title}</h2>
@@ -272,6 +313,30 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
                 </AnimatePresence>
             </motion.button>
 
+            {platform === 'other' && onShowQr && (
+                <motion.button
+                    onClick={onShowQr} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
+                    transition={TAP_TRANSITION} style={gpuStyle}
+                    className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold flex items-center justify-center gap-2"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="5" height="5" x="3" y="3" rx="1" />
+                        <rect width="5" height="5" x="16" y="3" rx="1" />
+                        <rect width="5" height="5" x="3" y="16" rx="1" />
+                        <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+                        <path d="M21 21v.01" />
+                        <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+                        <path d="M3 12h.01" />
+                        <path d="M12 3h.01" />
+                        <path d="M12 16v.01" />
+                        <path d="M16 12h1" />
+                        <path d="M21 12v.01" />
+                        <path d="M12 21v-1" />
+                    </svg>
+                    Открыть QR
+                </motion.button>
+            )}
+
             {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
                 <motion.button
                     onClick={onSkip} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
@@ -294,15 +359,18 @@ interface ConnectionDrawerProps {
 export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscription-link' }: ConnectionDrawerProps) {
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
+    const [showQr, setShowQr] = useState(false);
     const isBusyRef = useRef(false);
 
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
     const isSuccess   = steps !== null && nav.stepIndex === steps.length;
     const currentStep = steps?.[nav.stepIndex] ?? null;
     const activeDot   = nav.platform === null ? 0 : nav.stepIndex + 1;
-    const pageKey     = nav.platform === null
-        ? 'select'
-        : (isSuccess ? 'success' : `${nav.platform}-${nav.stepIndex}`);
+    const pageKey     = showQr 
+        ? 'qr' 
+        : (nav.platform === null
+            ? 'select'
+            : (isSuccess ? 'success' : `${nav.platform}-${nav.stepIndex}`));
 
     const withGuard = useCallback((fn: () => void) => {
         if (isBusyRef.current) return;
@@ -374,6 +442,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         if (!open) setTimeout(() => {
             dispatch({ type: 'RESET' });
             setIsCopied(false);
+            setShowQr(false);
             isBusyRef.current = false;
         }, 300);
     }, []);
@@ -430,7 +499,9 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                 className="absolute inset-0"
                                 style={gpuStyle}
                             >
-                                {nav.platform === null ? (
+                                {showQr ? (
+                                    <QrScreen url={subscriptionUrl} onBack={() => setShowQr(false)} />
+                                ) : nav.platform === null ? (
                                     <PlatformSelect onSelect={selectPlatform} />
                                 ) : isSuccess ? (
                                     <SuccessScreen />
@@ -442,6 +513,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         isCopied={isCopied}
                                         onAction={handleAction}
                                         onSkip={goNext}
+                                        onShowQr={() => setShowQr(true)}
                                     />
                                 )}
                             </motion.div>
