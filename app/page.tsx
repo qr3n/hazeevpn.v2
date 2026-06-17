@@ -9,7 +9,7 @@ import Lottie from 'lottie-react';
 import { memo, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTelegram } from '@/lib/telegram-provider';
 import {TransformProperties} from "motion-dom";
-import LottieWithSkeleton from "@/components/LottieWithSkeleton";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Aurora from "@/components/Aurora";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -256,7 +256,7 @@ PlatformSelect.displayName = 'PlatformSelect';
 const SuccessScreen = memo(() => (
     <div className="h-full flex flex-col px-4">
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
-            <LottieWithSkeleton
+            <DotLottieReact
                 src="/animations/heart.json"
                 loop
                 autoplay
@@ -417,7 +417,7 @@ export default function Home() {
                 className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0"
             >
                 <Aurora
-                    colorStops={["#ffdc67","#B497CF","#00bc00"]}
+                    colorStops={["#ffdc67","#B497CF","#00eb00"]}
                     blend={0.5}
                     amplitude={1.0}
                     speed={0.5}
@@ -434,7 +434,7 @@ export default function Home() {
                         <span className="inline-flex items-center gap-3">
                             {user?.first_name?.toLowerCase() || 'владимир'}!
 
-                           <LottieWithSkeleton
+                           <DotLottieReact
                                src="/animations/hand.json"
                                loop
                                autoplay
@@ -470,7 +470,7 @@ export default function Home() {
                             >
                                 Подключиться
 
-                                <LottieWithSkeleton
+                                <DotLottieReact
                                     src={"/animations/rocket.json"}
                                     loop autoplay className="w-8 h-8 pointer-events-none"
                                 />
