@@ -329,6 +329,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
         } else if (action === 'Добавить подписку') {
+            alert(subscriptionUrl)
             // happ://add/ работает на iOS, Android и десктопе (Windows/macOS)
             const deepLink = `happ://add/${subscriptionUrl}`;
 
