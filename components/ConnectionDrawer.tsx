@@ -18,14 +18,14 @@ const PLATFORMS: Record<PlatformKey, PlatformData> = {
     ios: {
         label: 'iOS', desc: 'iPhone & iPad',
         steps: [
-            { title: 'Установите приложение', text: 'Скачайте v2RayTun (или Streisand) из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
+            { title: 'Установите Happ', text: 'Скачайте v2RayTun из App Store — это бесплатно и займёт меньше минуты.', action: 'Открыть App Store' },
             { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
         ],
     },
     android: {
         label: 'Android', desc: 'Смартфоны',
         steps: [
-            { title: 'Установите приложение', text: 'Скачайте v2RayNG (или Hiddify) из Google Play или RuStore.',                               action: 'Открыть Google Play' },
+            { title: 'Установите Happ', text: 'Скачайте v2RayNG из Google Play или RuStore.',                               action: 'Открыть Google Play' },
             { title: 'Импортируйте профиль',  text: 'Нажмите на кнопку для перехода в приложение — сервера добавятся автоматически.',          action: 'Добавить подписку' },
         ],
     },
@@ -310,7 +310,9 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
 
     const handleAction = useCallback(() => {
         if (isBusyRef.current) return;
-        if (currentStep?.action === 'Скопировать ссылку') {
+        const action = currentStep?.action;
+
+        if (action === 'Скопировать ссылку') {
             isBusyRef.current = true;
             navigator.clipboard.writeText(subscriptionUrl);
             setIsCopied(true);
@@ -321,8 +323,25 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             }, 400);
             return;
         }
+
+        if (action === 'Открыть App Store') {
+            window.open('https://apps.apple.com/app/v2raytun/id6446786663', '_blank');
+        } else if (action === 'Открыть Google Play') {
+            window.open('https://play.google.com/store/apps/details?id=com.v2ray.ang', '_blank');
+        } else if (action === 'Добавить подписку') {
+            // Use specific protocols for apps
+            const deepLink = nav.platform === 'ios'
+                ? `v2raytun://install-config?url=${encodeURIComponent(subscriptionUrl)}`
+                : `v2rayng://install-config?url=${encodeURIComponent(subscriptionUrl)}`;
+            
+            // For 'other' or as fallback
+            const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
+            
+            window.location.href = finalLink;
+        }
+
         withGuard(() => dispatch({ type: 'NEXT' }));
-    }, [currentStep?.action, subscriptionUrl, withGuard]);
+    }, [currentStep?.action, subscriptionUrl, nav.platform, withGuard]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         if (!open) setTimeout(() => {
