@@ -89,26 +89,44 @@ function getTelegramWebApp(): TelegramWebApp | undefined {
 
 // ─── Navigation reducer ──────────────────────────────────────────────────────
 
-type NavState  = { platform: PlatformKey | null; stepIndex: number; direction: number; };
+type NavState  = { platform: PlatformKey | null; stepIndex: number; direction: number; showQr: boolean; qrOriginIndex: number | null; };
 type NavAction =
     | { type: 'SELECT'; platform: PlatformKey }
     | { type: 'NEXT' }
     | { type: 'BACK' }
     | { type: 'SET_STEP'; index: number }
+    | { type: 'SHOW_QR'; originIndex: number }
+    | { type: 'HIDE_QR'; toSuccess?: boolean }
     | { type: 'RESET' };
 
-const NAV_INITIAL: NavState = { platform: null, stepIndex: 0, direction: 1 };
+const NAV_INITIAL: NavState = { platform: null, stepIndex: 0, direction: 1, showQr: false, qrOriginIndex: null };
 
 function navReducer(s: NavState, a: NavAction): NavState {
     switch (a.type) {
-        case 'SELECT': return { platform: a.platform, stepIndex: 0, direction: 1 };
-        case 'NEXT':   return { ...s, stepIndex: s.stepIndex + 1, direction: 1 };
+        case 'SELECT': return { ...s, platform: a.platform, stepIndex: 0, direction: 1, showQr: false };
+        case 'NEXT':   return { ...s, stepIndex: s.stepIndex + 1, direction: 1, showQr: false };
         case 'BACK':
+            if (s.showQr) {
+                return { ...s, showQr: false, direction: -1, qrOriginIndex: null };
+            }
+            if (s.qrOriginIndex !== null && s.stepIndex === (PLATFORMS[s.platform!]?.steps.length ?? 0)) {
+                // Return to QR from success if we came from QR
+                return { ...s, showQr: true, direction: -1, stepIndex: s.qrOriginIndex };
+            }
             return s.stepIndex === 0
-                ? { platform: null, stepIndex: 0, direction: -1 }
+                ? { ...s, platform: null, stepIndex: 0, direction: -1 }
                 : { ...s, stepIndex: s.stepIndex - 1, direction: -1 };
         case 'SET_STEP':
-            return { ...s, stepIndex: a.index, direction: a.index > s.stepIndex ? 1 : -1 };
+            return { ...s, stepIndex: a.index, direction: a.index > s.stepIndex ? 1 : -1, showQr: false };
+        case 'SHOW_QR':
+            return { ...s, showQr: true, direction: 1, qrOriginIndex: a.originIndex };
+        case 'HIDE_QR':
+            return { 
+                ...s, 
+                showQr: false, 
+                direction: a.toSuccess ? 1 : -1,
+                stepIndex: a.toSuccess ? (PLATFORMS[s.platform!]?.steps.length ?? 0) : s.stepIndex 
+            };
         case 'RESET':  return NAV_INITIAL;
     }
 }
@@ -199,19 +217,19 @@ PlatformSelect.displayName = 'PlatformSelect';
 
 const QrScreen = memo(({ url, onNext }: { url: string; onNext: () => void }) => (
     <div className="h-full flex flex-col px-4">
-        <div className="flex-1 flex flex-col items-center justify-center text-center gap-8 pt-4">
-            <div className="bg-white p-6 rounded-4xl shadow-2xl shadow-white/5">
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-10">
+            <div className="bg-white p-6 rounded-4xl shadow-2xl shadow-white/5 gpu">
                 <QRCodeSVG
                     value={url}
-                    size={200}
+                    size={220}
                     level="H"
                     includeMargin={false}
                     imageSettings={{
                         src: "/favicon.ico",
                         x: undefined,
                         y: undefined,
-                        height: 40,
-                        width: 40,
+                        height: 44,
+                        width: 44,
                         excavate: true,
                     }}
                 />
@@ -363,15 +381,13 @@ interface ConnectionDrawerProps {
 export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscription-link' }: ConnectionDrawerProps) {
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
-    const [showQr, setShowQr] = useState(false);
-    const [qrOriginIndex, setQrOriginIndex] = useState<number | null>(null);
     const isBusyRef = useRef(false);
 
     const steps       = nav.platform ? PLATFORMS[nav.platform].steps : null;
     const isSuccess   = steps !== null && nav.stepIndex === steps.length;
     const currentStep = steps?.[nav.stepIndex] ?? null;
     const activeDot   = nav.platform === null ? 0 : nav.stepIndex + 1;
-    const pageKey     = showQr 
+    const pageKey     = nav.showQr 
         ? 'qr' 
         : (nav.platform === null
             ? 'select'
@@ -393,20 +409,8 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         [withGuard]
     );
     const goBack = useCallback(
-        () => withGuard(() => {
-            if (showQr) {
-                setShowQr(false);
-                setQrOriginIndex(null);
-            } else if (isSuccess && qrOriginIndex !== null) {
-                // Если мы на экране успеха и пришли туда из QR, возвращаемся в QR на тот же шаг
-                dispatch({ type: 'SET_STEP', index: qrOriginIndex });
-                setShowQr(true);
-            } else {
-                dispatch({ type: 'BACK' });
-                setQrOriginIndex(null);
-            }
-        }),
-        [withGuard, showQr, isSuccess, qrOriginIndex]
+        () => withGuard(() => dispatch({ type: 'BACK' })),
+        [withGuard]
     );
 
     const handleAction = useCallback(() => {
@@ -463,7 +467,6 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         if (!open) setTimeout(() => {
             dispatch({ type: 'RESET' });
             setIsCopied(false);
-            setShowQr(false);
             isBusyRef.current = false;
         }, 300);
     }, []);
@@ -520,16 +523,10 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                 className="absolute inset-0"
                                 style={gpuStyle}
                             >
-                                {showQr ? (
+                                {nav.showQr ? (
                                     <QrScreen 
                                         url={subscriptionUrl} 
-                                        onNext={() => {
-                                            setShowQr(false);
-                                            // Прыгаем сразу на экран успеха
-                                            if (steps) {
-                                                dispatch({ type: 'SET_STEP', index: steps.length });
-                                            }
-                                        }} 
+                                        onNext={() => withGuard(() => dispatch({ type: 'HIDE_QR', toSuccess: true }))} 
                                     />
                                 ) : nav.platform === null ? (
                                     <PlatformSelect onSelect={selectPlatform} />
@@ -543,10 +540,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         isCopied={isCopied}
                                         onAction={handleAction}
                                         onSkip={goNext}
-                                        onShowQr={() => {
-                                            setQrOriginIndex(nav.stepIndex);
-                                            setShowQr(true);
-                                        }}
+                                        onShowQr={() => withGuard(() => dispatch({ type: 'SHOW_QR', originIndex: nav.stepIndex }))}
                                     />
                                 )}
                             </motion.div>
