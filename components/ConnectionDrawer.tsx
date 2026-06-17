@@ -140,7 +140,7 @@ const PlatformButton = memo(({ platformKey, onSelect }: PlatformButtonProps) => 
     return (
         <motion.button
             onClick={handleClick}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
             transition={TAP_TRANSITION}
             style={gpuStyle}
             className={`relative overflow-hidden bg-zinc-800/50 rounded-3xl p-5 flex flex-col items-start justify-between min-h-[160px] ${platformKey === 'other' ? 'col-span-2' : ''}`}
@@ -194,7 +194,7 @@ const SuccessScreen = memo(() => (
         <div className="h-[140px] flex flex-col justify-end pb-4">
             <Drawer.Close asChild>
                 <motion.button
-                    whileTap={{ scale: 0.97 }} transition={TAP_TRANSITION} style={gpuStyle}
+                    whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }} transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                 >
                     Закрыть
@@ -225,7 +225,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
         <div className="h-[140px] flex flex-col justify-end gap-2 pb-4">
             <motion.button
                 onClick={onAction}
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
                 animate={{ backgroundColor: isCopied ? '#d1d5db' : '#ffffff', color: '#000000' }}
                 transition={{ duration: 0.1 }}
                 style={gpuStyle}
@@ -258,7 +258,7 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
 
             {stepIndex === 0 && (platform === 'ios' || platform === 'android') && (
                 <motion.button
-                    onClick={onSkip} whileTap={{ scale: 0.97 }}
+                    onClick={onSkip} whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }}
                     transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full rounded-3xl py-4 bg-zinc-800 text-xl text-white font-semibold"
                 >
@@ -271,7 +271,11 @@ const StepScreen = memo(({ currentStep, stepIndex, platform, isCopied, onAction,
 StepScreen.displayName = 'StepScreen';
 
 
-export function ConnectionDrawer() {
+interface ConnectionDrawerProps {
+    subscriptionUrl?: string;
+}
+
+export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscription-link' }: ConnectionDrawerProps) {
     const [nav, dispatch] = useReducer(navReducer, NAV_INITIAL);
     const [isCopied, setIsCopied] = useState(false);
     const isBusyRef = useRef(false);
@@ -308,7 +312,7 @@ export function ConnectionDrawer() {
         if (isBusyRef.current) return;
         if (currentStep?.action === 'Скопировать ссылку') {
             isBusyRef.current = true;
-            navigator.clipboard.writeText('vless://hazeevpn-v2-subscription-link');
+            navigator.clipboard.writeText(subscriptionUrl);
             setIsCopied(true);
             setTimeout(() => {
                 setIsCopied(false);
@@ -318,7 +322,7 @@ export function ConnectionDrawer() {
             return;
         }
         withGuard(() => dispatch({ type: 'NEXT' }));
-    }, [currentStep?.action, withGuard]);
+    }, [currentStep?.action, subscriptionUrl, withGuard]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         if (!open) setTimeout(() => {
@@ -332,7 +336,7 @@ export function ConnectionDrawer() {
         <Drawer.Root shouldScaleBackground onOpenChange={handleOpenChange}>
             <Drawer.Trigger asChild>
                 <motion.button
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.95, filter: 'brightness(0.85)' }}
                     transition={TAP_TRANSITION}
                     style={gpuStyle}
                     className="flex items-center justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
@@ -355,7 +359,7 @@ export function ConnectionDrawer() {
                     <div className="relative flex items-center justify-center flex-shrink-0 pt-2">
                         <motion.button
                             onClick={goBack} aria-label="Назад"
-                            whileTap={{ scale: 0.9 }} transition={TAP_TRANSITION} style={gpuStyle}
+                            whileTap={{ scale: 0.9, filter: 'brightness(0.85)'  }} transition={TAP_TRANSITION} style={gpuStyle}
                             className={`absolute left-0 p-2 rounded-full bg-zinc-800 text-white transition-opacity duration-200 ${nav.platform === null ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                         >
                             <Chevron dir="left" />

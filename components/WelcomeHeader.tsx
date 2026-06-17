@@ -3,14 +3,20 @@
 import { useTelegram } from '@/lib/telegram-provider';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-export function WelcomeHeader() {
+interface WelcomeHeaderProps {
+    username?: string | null;
+}
+
+export function WelcomeHeader({ username }: WelcomeHeaderProps) {
     const { user } = useTelegram();
+
+    const displayName = (user?.first_name || user?.username || username || 'владимир').toLowerCase();
 
     return (
         <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
             Добро пожаловать, <br />
             <span className="inline-flex items-center gap-3">
-                {(user?.first_name || user?.username || 'владимир').toLowerCase()}!
+                {displayName}!
 
                 <DotLottieReact
                     src="/animations/hand.json"
