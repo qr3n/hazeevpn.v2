@@ -417,7 +417,7 @@ export default function Home() {
                 className="absolute -top-[40%] left-1/2 -translate-x-1/2 w-[140%] h-[140%] pointer-events-none z-0"
             >
                 <Aurora
-                    colorStops={["#7cff67","#B497CF","#0fa868"]}
+                    colorStops={["#ffdc67","#B497CF","#00eb00"]}
                     blend={0.5}
                     amplitude={1.0}
                     speed={0.5}
