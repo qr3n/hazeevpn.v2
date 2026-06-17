@@ -35,10 +35,10 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
         // and fetch real data if available.
         // For now, we always provide mock data or try to detect environment.
         
-        const isTelegram = typeof window !== 'undefined' && (window as any).Telegram?.WebApp?.initData !== '';
+        const isTelegram = typeof window !== 'undefined' && !!(window as any).Telegram?.WebApp?.initDataUnsafe?.user;
         
-        if (isTelegram && process.env.NODE_ENV === 'production') {
-            // Placeholder for real logic
+        if (isTelegram) {
+            // Fetch user from Telegram WebApp
             const tgUser = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
             setAppData({
                 isDev: false,

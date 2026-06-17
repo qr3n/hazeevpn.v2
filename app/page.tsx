@@ -432,7 +432,7 @@ export default function Home() {
                     <h1 className="text-white text-5xl xss:text-4xl font-semibold leading-[0.85] tracking-tighter">
                         Добро пожаловать, <br />
                         <span className="inline-flex items-center gap-3">
-                            {user?.first_name?.toLowerCase() || 'владимир'}!
+                            {(user?.first_name || user?.username || 'владимир').toLowerCase()}!
 
                            <DotLottieReact
                                src="/animations/hand.json"
