@@ -513,7 +513,14 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         url={subscriptionUrl} 
                                         onNext={() => {
                                             setShowQr(false);
-                                            goNext();
+                                            // Прыгаем сразу на экран успеха (индекс за пределами массива шагов)
+                                            if (steps) {
+                                                withGuard(() => {
+                                                    for (let i = nav.stepIndex; i < steps.length; i++) {
+                                                        dispatch({ type: 'NEXT' });
+                                                    }
+                                                });
+                                            }
                                         }} 
                                     />
                                 ) : nav.platform === null ? (
