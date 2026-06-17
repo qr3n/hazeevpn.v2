@@ -8,6 +8,7 @@ import heart from './heart.json';
 import Lottie from 'lottie-react';
 import { memo, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useTelegram } from '@/lib/telegram-provider';
+import {TransformProperties} from "motion-dom";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -64,7 +65,8 @@ const slideVariants = {
 };
 
 // Функция форсирования 3D-композитинга для Framer Motion на уровне строк
-const forceGPU = ({ x }: { x: string }) => `translate3d(${x}, 0, 0) translateZ(0)`;
+const forceGPU = (transform: TransformProperties, generatedTransform: string) =>
+    `${generatedTransform} translateZ(0)`;
 
 const gpuStyle = {
     willChange: 'transform',
