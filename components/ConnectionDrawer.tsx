@@ -328,20 +328,25 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             window.open('https://apps.apple.com/app/v2raytun/id6476628951', '_blank');
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
-        } else if (action === 'Добавить подписку') {
-            alert(subscriptionUrl)
-            // happ://add/ работает на iOS, Android и десктопе (Windows/macOS)
-            const deepLink = `happ://add/${subscriptionUrl}`;
-            alert(deepLink)
+        }else if (action === 'Добавить подписку') {
 
-            // Используем <a> вместо window.location.href — страница не "уходит"
-            // даже если приложение не установлено
-            const a = document.createElement('a');
-            a.href = deepLink;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            // 1. Формируем чистый deep link (убираем протокол https://, если это необходимо для happ://)
+            const cleanUrl = subscriptionUrl.replace(/^https?:\/\//, '');
+            const deepLink = `happ://add/${cleanUrl}`;
+
+            // 2. Формируем URL страницы-редиректа (сервис maposia принимает целевой URL в параметре)
+            // Шаблон: https://github.io
+            const redirectServiceUrl = `https://github.io{encodeURIComponent(deepLink)}`;
+
+            // 3. Открываем через Telegram WebApp API, чтобы ссылка сработала во внешнем браузере
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openLink(redirectServiceUrl);
+            } else {
+                // Запасной вариант для обычного браузера
+                window.location.href = redirectServiceUrl;
+            }
         }
+
 
         withGuard(() => dispatch({ type: 'NEXT' }));
     }, [currentStep?.action, subscriptionUrl, withGuard]);
