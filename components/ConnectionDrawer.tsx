@@ -433,31 +433,11 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
             window.open('https://apps.apple.com/app/v2raytun/id6476628951', '_blank');
         } else if (action === 'Открыть Google Play') {
             window.open('https://play.google.com/store/apps/details?id=com.happproxy', '_blank');
-        } else if (action === 'Добавить подписку' || action === 'Я импортировал') {
-            // Используем протоколы приложений (happ://)
+        } else if (action === 'Добавить подписку') {
             const deepLink = `happ://add/${subscriptionUrl}`;
-            
-            const finalLink = nav.platform === 'other' ? subscriptionUrl : deepLink;
-            const redirectUrl = withRedirectPage(finalLink);
-
-            const tg = getTelegramWebApp();
-            
-            // Если это действие 'Я импортировал', просто идем дальше
-            if (action === 'Я импортировал') {
-                withGuard(() => dispatch({ type: 'NEXT' }));
-                return;
-            }
-
-            // Иначе открываем ссылку
-            if (tg?.openLink && !finalLink.startsWith('http')) {
-                tg.openLink(redirectUrl, { try_browser: true });
-            } else if (tg?.openLink && finalLink.startsWith('http')) {
-                tg.openLink(finalLink, { try_browser: true });
-            } else {
-                window.location.href = finalLink;
-            }
-            
+            window.open(deepLink, '_blank');
             withGuard(() => dispatch({ type: 'NEXT' }));
+            return;
         } else {
             withGuard(() => dispatch({ type: 'NEXT' }));
         }
