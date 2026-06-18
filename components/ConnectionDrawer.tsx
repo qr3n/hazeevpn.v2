@@ -441,7 +441,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         } else {
             withGuard(() => dispatch({ type: 'NEXT' }));
         }
-    }, [currentStep?.action, subscriptionUrl, nav.platform, withGuard]);
+    }, [currentStep?.action, subscriptionUrl, withGuard]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         if (!open) setTimeout(() => {
