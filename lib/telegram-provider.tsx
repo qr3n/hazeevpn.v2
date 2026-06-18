@@ -31,21 +31,22 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
     });
 
     useEffect(() => {
-        // In reality, here we would initialize @telegram-apps/sdk
-        // and fetch real data if available.
-        // For now, we always provide mock data or try to detect environment.
-        
-        const isTelegram = typeof window !== 'undefined' && !!(window as any).Telegram?.WebApp?.initDataUnsafe?.user;
-        
+        const tg = (window as any).Telegram?.WebApp;
+        const isTelegram = !!tg?.initDataUnsafe?.user;
+
         if (isTelegram) {
-            // Fetch user from Telegram WebApp
-            const tgUser = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
+            // 👇 Добавь сюда
+            tg.ready();
+            tg.expand();
+            if (tg.isVersionAtLeast?.('7.7')) {
+                tg.disableVerticalSwipes();
+            }
+
             setAppData({
                 isDev: false,
-                user: tgUser,
+                user: tg.initDataUnsafe.user,
             });
         } else {
-            // Default to mock for dev or non-tg env
             setAppData({
                 isDev: true,
                 user: MOCK_USER,
