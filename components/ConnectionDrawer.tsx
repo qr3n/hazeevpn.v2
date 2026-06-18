@@ -429,6 +429,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         const action = currentStep?.action;
 
         if (action === 'Скопировать ссылку') {
+            tgHaptic.tap('light');
             isBusyRef.current = true;
             navigator.clipboard.writeText(subscriptionUrl);
             setIsCopied(true);
