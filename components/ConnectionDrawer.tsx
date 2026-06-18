@@ -6,6 +6,7 @@ import { memo, useCallback, useReducer, useRef, useState } from 'react';
 import { TransformProperties } from "motion-dom";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { QRCodeSVG } from 'qrcode.react';
+import {tgHaptic} from "@/lib/telegram-provider";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -272,6 +273,7 @@ const SuccessScreen = memo(() => (
         <div className="h-[140px] flex flex-col justify-end pb-4">
             <Drawer.Close asChild>
                 <motion.button
+                    onClick={() => tgHaptic.success()}
                     whileTap={{ scale: 0.97, filter: 'brightness(0.85)' }} transition={TAP_TRANSITION} style={gpuStyle}
                     className="w-full relative rounded-3xl py-4 bg-white text-xl text-black font-semibold"
                 >
@@ -409,10 +411,12 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
         [withGuard]
     );
     const goBack = useCallback(
-        () => withGuard(() => dispatch({ type: 'BACK' })),
+        () => withGuard(() => {
+            tgHaptic.tap('light');
+            dispatch({ type: 'BACK' });
+        }),
         [withGuard]
     );
-
     const handleAction = useCallback(() => {
         if (isBusyRef.current) return;
         const action = currentStep?.action;

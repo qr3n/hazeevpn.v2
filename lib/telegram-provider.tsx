@@ -14,6 +14,16 @@ interface AppData {
     isDev: boolean;
 }
 
+export const tgHaptic = {
+    success: () => (window as any)?.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'),
+    warning: () => (window as any)?.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('warning'),
+    error:   () => (window as any)?.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('error'),
+    tap:     (style: 'light'|'medium'|'heavy'|'rigid'|'soft' = 'light') =>
+        (window as any)?.Telegram?.WebApp?.HapticFeedback?.impactOccurred(style),
+    tick:    () => (window as any)?.Telegram?.WebApp?.HapticFeedback?.selectionChanged(),
+};
+
+
 const TelegramContext = createContext<AppData | null>(null);
 
 // MOCK DATA for DEV mode
