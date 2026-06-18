@@ -531,7 +531,10 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                                         isCopied={isCopied}
                                         onAction={handleAction}
                                         onSkip={goNext}
-                                        onShowQr={() => withGuard(() => dispatch({ type: 'SHOW_QR', originIndex: nav.stepIndex }))}
+                                        onShowQr={() => withGuard(() => {
+                                            tgHaptic.tap('light');
+                                            dispatch({type: 'SHOW_QR', originIndex: nav.stepIndex})
+                                        })}
                                     />
                                 )}
                             </motion.div>
