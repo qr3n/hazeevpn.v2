@@ -403,13 +403,20 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
     }, []);
 
     const selectPlatform = useCallback(
-        (key: PlatformKey) => withGuard(() => dispatch({ type: 'SELECT', platform: key })),
+        (key: PlatformKey) => withGuard(() => {
+            tgHaptic.tap('light');
+            dispatch({type: 'SELECT', platform: key})
+        }),
         [withGuard]
     );
     const goNext = useCallback(
-        () => withGuard(() => dispatch({ type: 'NEXT' })),
+        () => withGuard(() => {
+            tgHaptic.tap('light');
+            dispatch({ type: 'NEXT' });
+        }),
         [withGuard]
     );
+
     const goBack = useCallback(
         () => withGuard(() => {
             tgHaptic.tap('light');
