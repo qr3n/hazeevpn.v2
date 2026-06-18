@@ -470,6 +470,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                     whileTap={{ scale: 0.95, filter: 'brightness(0.85)' }}
                     transition={TAP_TRANSITION}
                     style={gpuStyle}
+                    onClick={() => tgHaptic.tap('light')}
                     className="flex items-center mb-4 justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
                 >
                     Подключиться
