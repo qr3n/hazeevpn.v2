@@ -144,7 +144,9 @@ export default function Aurora(props) {
   useEffect(() => {
     const isPaused = () => {
         const drawer = document.querySelector('[data-vaul-drawer]');
-        return drawer && drawer.getAttribute('data-state') === 'open';
+        if (!drawer) return false;
+        if (drawer.getAttribute('data-vaul-dragging') === 'true') return true;
+        return drawer.getAttribute('data-state') === 'open';
     };
 
     const ctn = ctnDom.current;
