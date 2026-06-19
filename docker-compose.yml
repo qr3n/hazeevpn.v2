@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hazeevpn-frontend:latest
+    container_name: hazeevpn-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Сюда можно добавить любые переменные окружения, нужные для работы
+      # - NEXT_PUBLIC_API_URL=https://api.example.com
+    # Если фронтенд должен общаться с другими контейнерами (например, с Nginx или бэкендом Xray), раскомментируй:
+    # networks:
+    #   - vpn-network
+
+# networks:
+#   vpn-network:
+#     driver: bridge
