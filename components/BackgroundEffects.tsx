@@ -25,6 +25,7 @@ export function BackgroundEffects() {
                     speed={0.5}
                 />
             </motion.div>
+            <div className="absolute w-[200%] h-[100dvh] bg-gradient-to-br from-black opacity-90 to-transparent z-0 pointer-events-none" />
         </>
     );
 }
