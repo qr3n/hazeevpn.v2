@@ -1,7 +1,12 @@
 'use client';
 
 import { useTelegram } from '@/lib/telegram-provider';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import dynamic from 'next/dynamic';
+
+const DotLottieReact = dynamic(
+    () => import('@lottiefiles/dotlottie-react').then(m => m.DotLottieReact),
+    { ssr: false }
+);
 
 interface WelcomeHeaderProps {
     username?: string | null;

@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         removeConsole: process.env.NODE_ENV === "production",
     },
     experimental: {
-        optimizePackageImports: ["framer-motion", "radix-ui", "vaul"],
+        optimizePackageImports: ["framer-motion", "radix-ui", "vaul", "@lottiefiles/dotlottie-react"],
     },
 };
 

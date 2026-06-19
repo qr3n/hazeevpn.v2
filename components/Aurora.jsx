@@ -118,6 +118,22 @@ void main() {
 }
 `;
 
+const hexToRgb = (() => {
+  const cache = new Map();
+  return (hex) => {
+    let rgb = cache.get(hex);
+    if (!rgb) {
+      const c = new Color(hex);
+      rgb = [c.r, c.g, c.b];
+      cache.set(hex, rgb);
+    }
+    return rgb;
+  };
+})();
+
+const TARGET_FPS = 30;
+const FRAME_INTERVAL = 1000 / TARGET_FPS;
+
 export default function Aurora(props) {
   const { colorStops = ['#5227FF', '#7cff67', '#5227FF'], amplitude = 1.0, blend = 0.5, className = '' } = props;
   const propsRef = useRef(props);
@@ -126,7 +142,6 @@ export default function Aurora(props) {
   const ctnDom = useRef(null);
 
   useEffect(() => {
-    // Only pause when the drawer is settled (fully open)
     const isPaused = () => {
         const drawer = document.querySelector('[data-vaul-drawer]');
         return drawer && drawer.getAttribute('data-state') === 'open';
@@ -139,8 +154,8 @@ export default function Aurora(props) {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: 1.0,
-      powerPreference: 'high-performance'
+      dpr: Math.min(window.devicePixelRatio, 1.5),
+      powerPreference: 'low-power'
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -159,17 +174,14 @@ export default function Aurora(props) {
         program.uniforms.uResolution.value = [width, height];
       }
     }
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', resize, { passive: true });
 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) {
       delete geometry.attributes.uv;
     }
 
-    const colorStopsArray = colorStops.map(hex => {
-      const c = new Color(hex);
-      return [c.r, c.g, c.b];
-    });
+    const colorStopsArray = colorStops.map(hexToRgb);
 
     program = new Program(gl, {
       vertex: VERT,
@@ -187,22 +199,27 @@ export default function Aurora(props) {
     ctn.appendChild(gl.canvas);
 
     let animateId = 0;
+    let lastFrameTime = 0;
+    let isDocHidden = false;
+
+    const onVisibility = () => { isDocHidden = document.hidden; };
+    document.addEventListener('visibilitychange', onVisibility, { passive: true });
+
     const update = t => {
       animateId = requestAnimationFrame(update);
-      
-      // Optimization: skip rendering if drawer is open (unless we want it blurred behind)
-      // But since we have a dark overlay, we can skip it to save battery/FPS
-      if (isPaused()) return;
+
+      if (isDocHidden || isPaused()) return;
+
+      const delta = t - lastFrameTime;
+      if (delta < FRAME_INTERVAL) return;
+      lastFrameTime = t - (delta % FRAME_INTERVAL);
 
       const { time = t * 0.01, speed = 1.0 } = propsRef.current;
       program.uniforms.uTime.value = time * speed * 0.1;
       program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
       program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
       const stops = propsRef.current.colorStops ?? colorStops;
-      program.uniforms.uColorStops.value = stops.map(hex => {
-        const c = new Color(hex);
-        return [c.r, c.g, c.b];
-      });
+      program.uniforms.uColorStops.value = stops.map(hexToRgb);
       renderer.render({ scene: mesh });
     };
     animateId = requestAnimationFrame(update);
@@ -211,6 +228,7 @@ export default function Aurora(props) {
 
     return () => {
       cancelAnimationFrame(animateId);
+      document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('resize', resize);
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
@@ -220,5 +238,5 @@ export default function Aurora(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amplitude]);
 
-  return <div ref={ctnDom} className={`gpu aurora-container ${className}`} />;
+  return <div ref={ctnDom} className={`aurora-container ${className}`} />;
 }
