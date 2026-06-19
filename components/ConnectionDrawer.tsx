@@ -1,19 +1,11 @@
 'use client';
 
-import { AnimatePresence, motion, type Transition } from 'framer-motion';
+import { AnimatePresence, motion, Transition } from 'framer-motion';
 import { Drawer } from 'vaul';
 import { memo, useCallback, useReducer, useRef, useState } from 'react';
-import type { TransformProperties } from "motion-dom";
-import dynamic from 'next/dynamic';
-
-const DotLottieReact = dynamic(
-    () => import('@lottiefiles/dotlottie-react').then(m => m.DotLottieReact),
-    { ssr: false }
-);
-const QRCodeSVG = dynamic(
-    () => import('qrcode.react').then(m => m.QRCodeSVG),
-    { ssr: false }
-);
+import { TransformProperties } from "motion-dom";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { QRCodeSVG } from 'qrcode.react';
 import {tgHaptic} from "@/lib/telegram-provider";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -54,15 +46,13 @@ const DOTS = [0, 1, 2, 3] as const;
 const SLIDE_TRANSITION: Transition = { type: 'spring', stiffness: 320, damping: 30, mass: 0.8 };
 const TAP_TRANSITION:   Transition = { type: 'spring', stiffness: 400, damping: 22 };
 
-const SLIDE_W = typeof window !== 'undefined' ? window.innerWidth : 400;
-
 const slideVariants = {
     enter: (dir: number) => ({
-        x: dir > 0 ? SLIDE_W : -SLIDE_W,
+        x: dir > 0 ? typeof window !== 'undefined' ? window.innerWidth : 400 : typeof window !== 'undefined' ? -window.innerWidth : -400,
         z: 0
     }),
     exit: (dir: number) => ({
-        x: dir > 0 ? -SLIDE_W : SLIDE_W,
+        x: dir > 0 ? typeof window !== 'undefined' ? -window.innerWidth : -400 : typeof window !== 'undefined' ? window.innerWidth : 400,
         z: 0
     }),
     center: {
@@ -71,12 +61,15 @@ const slideVariants = {
     },
 };
 
-const forceGPU = (_transform: TransformProperties, generatedTransform: string) =>
+const forceGPU = (transform: TransformProperties, generatedTransform: string) =>
     `${generatedTransform} translateZ(0)`;
 
 const gpuStyle = {
+    willChange: 'transform, opacity',
+    WebkitBackfaceVisibility: 'hidden',
     backfaceVisibility: 'hidden',
     transform: 'translateZ(0)',
+    perspective: '1000px',
 } as const;
 
 // ─── Telegram deep-link redirect fix ────────────────────────────────────────
