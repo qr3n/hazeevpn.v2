@@ -22,6 +22,7 @@ COPY . .
 
 # Отключаем телеметрию Next.js для ускорения сборки
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HAZEE_API_TOKEN=$HAZEE_API_TOKEN
 
 # Собираем проект
 RUN npm run build
