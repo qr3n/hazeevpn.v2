@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build:
@@ -8,17 +6,37 @@ services:
     image: hazeevpn-frontend:latest
     container_name: hazeevpn-web
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      # Сюда можно добавить любые переменные окружения, нужные для работы
-      # - NEXT_PUBLIC_API_URL=https://api.example.com
-    # Если фронтенд должен общаться с другими контейнерами (например, с Nginx или бэкендом Xray), раскомментируй:
-    # networks:
-    #   - vpn-network
+    networks:
+      - hazeenet
 
-# networks:
-#   vpn-network:
-#     driver: bridge
+  nginx:
+    image: nginx:alpine
+    container_name: hazeevpn-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - web
+    networks:
+      - hazeenet
+
+  certbot:
+    image: certbot/certbot
+    container_name: hazeevpn-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+networks:
+  hazeenet:
+    driver: bridge

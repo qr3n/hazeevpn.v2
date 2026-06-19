@@ -9,7 +9,7 @@ WORKDIR /app
 # Копируем только файлы блокировок для кэширования слоя зависимостей
 COPY package.json package-lock.json* ./
 # Чистая установка зависимостей
-RUN npm ci
+RUN npm install
 
 # ==========================================
 # Этап 2: Сборка проекта (builder)
@@ -22,6 +22,7 @@ COPY . .
 
 # Отключаем телеметрию Next.js для ускорения сборки
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HAZEE_API_TOKEN=$HAZEE_API_TOKEN
 
 # Собираем проект
 RUN npm run build
