@@ -68,7 +68,7 @@ export default async function UserPage({ params, searchParams }: PageProps) {
 
                 {/* ── Drawer ────────────────────────────────────────── */}
                 <div className="relative z-10 will-change-transform [transform:translateZ(0)]">
-                    <ConnectionDrawer subscriptionUrl={user.subscriptionUrl} />
+                    <ConnectionDrawer subscriptionUrl={user.subscriptionUrl.replace('sub.hazeevpn.com', 'my.hazeevpn.com')} />
                 </div>
             </div>
         </div>
