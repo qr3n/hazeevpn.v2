@@ -118,127 +118,107 @@ void main() {
 }
 `;
 
-const hexToRgb = (() => {
-  const cache = new Map();
-  return (hex) => {
-    let rgb = cache.get(hex);
-    if (!rgb) {
-      const c = new Color(hex);
-      rgb = [c.r, c.g, c.b];
-      cache.set(hex, rgb);
-    }
-    return rgb;
-  };
-})();
-
-const TARGET_FPS = 30;
-const FRAME_INTERVAL = 1000 / TARGET_FPS;
-
 export default function Aurora(props) {
-  const { colorStops = ['#5227FF', '#7cff67', '#5227FF'], amplitude = 1.0, blend = 0.5, className = '' } = props;
-  const propsRef = useRef(props);
-  propsRef.current = props;
+    const { colorStops = ['#5227FF', '#7cff67', '#5227FF'], amplitude = 1.0, blend = 0.5, className = '' } = props;
+    const propsRef = useRef(props);
+    propsRef.current = props;
 
-  const ctnDom = useRef(null);
+    const ctnDom = useRef(null);
 
-  useEffect(() => {
-    const isPaused = () => {
-        const drawer = document.querySelector('[data-vaul-drawer]');
-        if (!drawer) return false;
-        if (drawer.getAttribute('data-vaul-dragging') === 'true') return true;
-        return drawer.getAttribute('data-state') === 'open';
-    };
+    useEffect(() => {
+        // Only pause when the drawer is settled (fully open)
+        const isPaused = () => {
+            const drawer = document.querySelector('[data-vaul-drawer]');
+            return drawer && drawer.getAttribute('data-state') === 'open';
+        };
 
-    const ctn = ctnDom.current;
-    if (!ctn) return;
+        const ctn = ctnDom.current;
+        if (!ctn) return;
 
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false,
-      dpr: Math.min(window.devicePixelRatio, 1.5),
-      powerPreference: 'low-power'
-    });
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.canvas.style.backgroundColor = 'transparent';
+        const renderer = new Renderer({
+            alpha: true,
+            premultipliedAlpha: true,
+            antialias: false,
+            dpr: 1.0,
+            powerPreference: 'high-performance'
+        });
+        const gl = renderer.gl;
+        gl.clearColor(0, 0, 0, 0);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.canvas.style.backgroundColor = 'transparent';
 
-    let program;
+        let program;
 
-    function resize() {
-      if (!ctn) return;
-      const width = ctn.offsetWidth;
-      const height = ctn.offsetHeight;
-      renderer.setSize(width, height);
-      if (program) {
-        program.uniforms.uResolution.value = [width, height];
-      }
-    }
-    window.addEventListener('resize', resize, { passive: true });
+        function resize() {
+            if (!ctn) return;
+            const width = ctn.offsetWidth;
+            const height = ctn.offsetHeight;
+            renderer.setSize(width, height);
+            if (program) {
+                program.uniforms.uResolution.value = [width, height];
+            }
+        }
+        window.addEventListener('resize', resize);
 
-    const geometry = new Triangle(gl);
-    if (geometry.attributes.uv) {
-      delete geometry.attributes.uv;
-    }
+        const geometry = new Triangle(gl);
+        if (geometry.attributes.uv) {
+            delete geometry.attributes.uv;
+        }
 
-    const colorStopsArray = colorStops.map(hexToRgb);
+        const colorStopsArray = colorStops.map(hex => {
+            const c = new Color(hex);
+            return [c.r, c.g, c.b];
+        });
 
-    program = new Program(gl, {
-      vertex: VERT,
-      fragment: FRAG,
-      uniforms: {
-        uTime: { value: 0 },
-        uAmplitude: { value: amplitude },
-        uColorStops: { value: colorStopsArray },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
-        uBlend: { value: blend }
-      }
-    });
+        program = new Program(gl, {
+            vertex: VERT,
+            fragment: FRAG,
+            uniforms: {
+                uTime: { value: 0 },
+                uAmplitude: { value: amplitude },
+                uColorStops: { value: colorStopsArray },
+                uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+                uBlend: { value: blend }
+            }
+        });
 
-    const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
+        const mesh = new Mesh(gl, { geometry, program });
+        ctn.appendChild(gl.canvas);
 
-    let animateId = 0;
-    let lastFrameTime = 0;
-    let isDocHidden = false;
+        let animateId = 0;
+        const update = t => {
+            animateId = requestAnimationFrame(update);
 
-    const onVisibility = () => { isDocHidden = document.hidden; };
-    document.addEventListener('visibilitychange', onVisibility, { passive: true });
+            // Optimization: skip rendering if drawer is open (unless we want it blurred behind)
+            // But since we have a dark overlay, we can skip it to save battery/FPS
+            if (isPaused()) return;
 
-    const update = t => {
-      animateId = requestAnimationFrame(update);
+            const { time = t * 0.01, speed = 1.0 } = propsRef.current;
+            program.uniforms.uTime.value = time * speed * 0.1;
+            program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
+            program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
+            const stops = propsRef.current.colorStops ?? colorStops;
+            program.uniforms.uColorStops.value = stops.map(hex => {
+                const c = new Color(hex);
+                return [c.r, c.g, c.b];
+            });
+            renderer.render({ scene: mesh });
+        };
+        animateId = requestAnimationFrame(update);
 
-      if (isDocHidden || isPaused()) return;
+        resize();
 
-      const delta = t - lastFrameTime;
-      if (delta < FRAME_INTERVAL) return;
-      lastFrameTime = t - (delta % FRAME_INTERVAL);
+        return () => {
+            cancelAnimationFrame(animateId);
+            window.removeEventListener('resize', resize);
+            if (ctn && gl.canvas.parentNode === ctn) {
+                ctn.removeChild(gl.canvas);
+            }
+            gl.getExtension('WEBGL_lose_context')?.loseContext();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [amplitude]);
 
-      const { time = t * 0.01, speed = 1.0 } = propsRef.current;
-      program.uniforms.uTime.value = time * speed * 0.1;
-      program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
-      program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
-      const stops = propsRef.current.colorStops ?? colorStops;
-      program.uniforms.uColorStops.value = stops.map(hexToRgb);
-      renderer.render({ scene: mesh });
-    };
-    animateId = requestAnimationFrame(update);
-
-    resize();
-
-    return () => {
-      cancelAnimationFrame(animateId);
-      document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('resize', resize);
-      if (ctn && gl.canvas.parentNode === ctn) {
-        ctn.removeChild(gl.canvas);
-      }
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amplitude]);
-
-  return <div ref={ctnDom} className={`aurora-container ${className}`} />;
+    return <div ref={ctnDom} className={`gpu aurora-container ${className}`} />;
 }
