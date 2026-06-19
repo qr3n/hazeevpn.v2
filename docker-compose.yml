@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build:
@@ -8,8 +6,6 @@ services:
     image: hazeevpn-frontend:latest
     container_name: hazeevpn-web
     restart: unless-stopped
-    # Используем expose вместо ports, чтобы порт был доступен
-    # только внутри сети Docker для Nginx, но не из интернета
     expose:
       - "3000"
     environment:
@@ -24,15 +20,22 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443" # Сразу открываем порт для будущего SSL (HTTPS)
+      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt   # Папка с сертификатами
-      - ./certbot/www:/var/www/certbot    # Папка для проверки владения доменом
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - web
     networks:
       - hazeenet
+
+  certbot:
+    image: certbot/certbot
+    container_name: hazeevpn-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
 networks:
   hazeenet:
