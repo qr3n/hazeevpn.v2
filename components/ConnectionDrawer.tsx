@@ -471,7 +471,7 @@ export function ConnectionDrawer({ subscriptionUrl = 'vless://hazeevpn-v2-subscr
                     transition={TAP_TRANSITION}
                     style={gpuStyle}
                     onClick={() => tgHaptic.tap('light')}
-                    className="flex items-center mb-4 justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
+                    className="flex items-center mb-8 justify-center relative w-full gap-3 rounded-3xl py-3.5 bg-white text-2xl text-black font-semibold overflow-hidden group"
                 >
                     Подключиться
                     <DotLottieReact src={"/animations/rocket.json"} loop autoplay className="w-8 h-8 pointer-events-none gpu" />
